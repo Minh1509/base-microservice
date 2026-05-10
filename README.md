@@ -1,9 +1,9 @@
 # base-microservice
 
-Monorepo NestJS microservices — `api-gateway` (HTTP edge) + `auth-service`/`user-service` (Kafka). **pnpm workspaces + Turborepo**. Postgres 16, Kafka 3.7 KRaft, Kong 3.7, Redis 7.
+Monorepo NestJS microservices — `api-gateway` (HTTP edge) + `auth-service`/`user-service` (Kafka). **pnpm workspaces + Turborepo**. Postgres 16, Kafka 3.7 KRaft, Redis 7.
 
 ```
-client → Kong :8000 → api-gateway :3000 → Kafka → auth-service | user-service → Postgres
+client → api-gateway :3000 → Kafka → auth-service | user-service → Postgres
 ```
 
 ## Quick start (dev)
@@ -31,7 +31,7 @@ Per-service `apps/*/·env` đã được commit sample dev. `.env.shared` (root,
 
 ```bash
 pnpm docker:up                  # build + up 3 image app + infra
-curl -X POST http://localhost:8000/auth/ping -H 'Content-Type: application/json' -d '{}'
+curl -X POST http://localhost:3000/auth/ping -H 'Content-Type: application/json' -d '{}'
 pnpm docker:down
 ```
 
@@ -108,7 +108,6 @@ libs/
   database/       MikroOrmModule wrapper
   dto/            request + response DTOs
 docker/
-  kong/           kong.yml (dev) + kong.apps.yml (full)
   postgres/       init.sql (tạo DB)
 scripts/
   new-service-db.sh

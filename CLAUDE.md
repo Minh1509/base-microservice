@@ -32,16 +32,16 @@ pnpm pm2:stop                  # pm2 delete
 pnpm docker:dev:down
 ```
 
-`docker-compose-dev.yml` chứa postgres, kafka, kafka-ui, kong (trỏ `host.docker.internal:3000`), redis.
+`docker-compose-dev.yml` chứa postgres, kafka, kafka-ui, redis.
 
-**Full container**: build image 3 app + infra + Kong trỏ nội mạng.
+**Full container**: build image 3 app + infra.
 
 ```bash
 pnpm docker:up                 # docker compose up -d --build
 pnpm docker:down
 ```
 
-`docker-compose.yml` tách riêng cho mode này. Kong dùng `docker/kong/kong.apps.yml` cố định trỏ `http://api-gateway:3000`.
+`docker-compose.yml` tách riêng cho mode này.
 
 Services exposed on host:
 
@@ -50,8 +50,6 @@ Services exposed on host:
 | Postgres    | 5432 | DB tạo qua `docker/postgres/init.sql` (`auth_db`, `user_db`) |
 | Kafka       | 9094 | KRaft, external listener                                     |
 | Kafka UI    | 8080 | <http://localhost:8080>                                      |
-| Kong proxy  | 8000 | Edge → api-gateway                                           |
-| Kong admin  | 8001 | DB-less declarative                                          |
 | Redis       | 6379 |                                                              |
 | api-gateway | 3000 | Full mode thôi; dev mode chạy host                           |
 
@@ -113,7 +111,7 @@ apps/auth-service/
 ## Architecture
 
 ```
-client → Kong :8000 → api-gateway :3000 (HTTP) → Kafka → auth-service | user-service
+client → api-gateway :3000 (HTTP) → Kafka → auth-service | user-service
 ```
 
 - **api-gateway** — HTTP + `ClientsModule.registerAsync` (AUTH_SERVICE, USER_SERVICE). **Luôn** gọi `sendRpc(client, pattern, payload)` (từ `@app/common`) — không `firstValueFrom` trần.
@@ -171,15 +169,6 @@ DTO cả request lẫn response ở `libs/dto/src/<domain>/{name}.dto.ts` + `{na
 ## Logger — `nest-winston`
 
 `WinstonModule.createLogger(buildWinstonOptions({ serviceName }))` ở mọi `main.ts`. Pass vào cả `createApplicationContext` + `createMicroservice/create`. Dev: `nestLike` pretty + color. Prod: JSON single-line (`service`, `level`, `timestamp`, `context`, `stack`).
-
-## Kong (edge)
-
-DB-less declarative. 2 file cho 2 mode:
-
-- `docker/kong/kong.yml` — dev, route `/` → `host.docker.internal:3000`.
-- `docker/kong/kong.apps.yml` — full, route `/` → `http://api-gateway:3000`.
-
-`docker-compose-dev.yml` và `docker-compose.yml` mỗi file chỉ mount 1 Kong config tương ứng.
 
 ## DX: PM2 + Husky + Makefile
 
