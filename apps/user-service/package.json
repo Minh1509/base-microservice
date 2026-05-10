@@ -1,0 +1,12 @@
+{
+  "name": "@base/user-service",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -w exec nest start user-service --watch --preserveWatchOutput",
+    "build": "pnpm -w exec nest build user-service",
+    "start": "node ../../dist/apps/user-service/main",
+    "lint": "eslint src --max-warnings=0",
+    "test": "pnpm -w exec jest apps/user-service --passWithNoTests"
+  }
+}

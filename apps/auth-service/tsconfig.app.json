@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "declaration": false,
+    "outDir": "../../dist/apps/auth-service"
+  },
+  "include": ["src/**/*", "entities/**/*", "commands/**/*"],
+  "exclude": ["node_modules", "dist", "test", "database", "**/*spec.ts"]
+}

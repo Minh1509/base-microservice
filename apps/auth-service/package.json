@@ -1,0 +1,12 @@
+{
+  "name": "@base/auth-service",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -w exec nest start auth-service --watch --preserveWatchOutput",
+    "build": "pnpm -w exec nest build auth-service",
+    "start": "node ../../dist/apps/auth-service/main",
+    "lint": "eslint src --max-warnings=0",
+    "test": "pnpm -w exec jest apps/auth-service --passWithNoTests"
+  }
+}
