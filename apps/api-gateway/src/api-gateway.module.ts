@@ -1,4 +1,4 @@
-import { AUTH_SERVICE, KafkaModule, USER_SERVICE } from '@app/common';
+import { AUTH_SERVICE, KafkaModule, LoggerModule, USER_SERVICE } from '@app/common';
 import { appConfig, buildConfigModule, kafkaConfig } from '@app/config';
 import { Module } from '@nestjs/common';
 import { ApiGatewayController } from './api-gateway.controller';
@@ -16,6 +16,7 @@ import { ApiGatewayService } from './api-gateway.service';
         { name: USER_SERVICE, groupSuffix: 'user' },
       ],
     }),
+    LoggerModule.forRoot(),
   ],
   controllers: [ApiGatewayController],
   providers: [ApiGatewayService],

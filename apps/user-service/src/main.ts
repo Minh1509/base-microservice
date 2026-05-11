@@ -24,7 +24,14 @@ async function bootstrap() {
       logger,
       transport: Transport.KAFKA,
       options: {
-        client: { brokers: kafka.brokers, clientId: kafka.clientId },
+        client: {
+          brokers: kafka.brokers,
+          clientId: kafka.clientId,
+          retry: {
+            initialRetryTime: 1000,
+            retries: 10,
+          },
+        },
         consumer: { groupId: kafka.groupId },
       },
     },

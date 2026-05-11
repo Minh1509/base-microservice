@@ -29,6 +29,10 @@ export class KafkaModule {
           client: {
             brokers: kafka.brokers,
             clientId: `${kafka.clientId}-${def.groupSuffix}-client`,
+            retry: {
+              initialRetryTime: 1000,
+              retries: 10,
+            },
           },
           consumer: { groupId: `${kafka.groupId}-${def.groupSuffix}` },
         },

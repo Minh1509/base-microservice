@@ -1,3 +1,4 @@
+import { LoggerModule } from '@app/common';
 import {
   appConfig,
   buildConfigModule,
@@ -9,7 +10,7 @@ import { DatabaseModule } from '@app/database';
 import { Module } from '@nestjs/common';
 import { AuthServiceController } from './auth-service.controller';
 import { AuthServiceService } from './auth-service.service';
-import { CreateAdminCommand } from '../commands/create-admin.command';
+import { CommandModule } from '../commands';
 
 @Module({
   imports: [
@@ -18,8 +19,10 @@ import { CreateAdminCommand } from '../commands/create-admin.command';
       envFilePath: ['apps/auth-service/.env', '.env.shared'],
     }),
     DatabaseModule,
+    CommandModule,
+    LoggerModule.forRoot(),
   ],
   controllers: [AuthServiceController],
-  providers: [AuthServiceService, CreateAdminCommand],
+  providers: [AuthServiceService],
 })
 export class AuthServiceModule {}
