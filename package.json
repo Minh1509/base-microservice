@@ -8,7 +8,7 @@
   "packageManager": "pnpm@10.12.4",
   "scripts": {
     "prepare": "husky",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --ui=tui",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
