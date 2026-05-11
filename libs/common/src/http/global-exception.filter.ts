@@ -80,7 +80,7 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
         exception instanceof Error ? exception.stack : undefined,
       );
     } else {
-      this.logger.warn(`[${body.code}] ${body.message} (${req.method} ${path})`);
+      this.logger.error(`[${body.code}] ${body.message} (${req.method} ${path})`);
     }
 
     res.status(status).json(body);

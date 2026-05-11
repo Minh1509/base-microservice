@@ -26,7 +26,7 @@ export class RpcExceptionFilter implements ExceptionFilter {
         exception instanceof Error ? exception.stack : undefined,
       );
     } else {
-      this.logger.warn(`[${payload.code}] ${payload.message}`);
+      this.logger.error(`[${payload.code}] ${payload.message}`);
     }
 
     return throwError(() => new RpcException(payload));
