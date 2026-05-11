@@ -32,7 +32,7 @@ COPY --from=build /app/apps/api-gateway/package.json apps/api-gateway/
 COPY --from=build /app/apps/auth-service/package.json apps/auth-service/
 COPY --from=build /app/apps/user-service/package.json apps/user-service/
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm install --prod --frozen-lockfile
+    pnpm install --prod --frozen-lockfile --ignore-scripts
 COPY --from=build /app/dist/apps/api-gateway ./dist/apps/api-gateway
 USER app
 EXPOSE 3000
