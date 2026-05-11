@@ -35,5 +35,4 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm install --prod --frozen-lockfile --ignore-scripts
 COPY --from=build /app/dist/apps/api-gateway ./dist/apps/api-gateway
 USER app
-EXPOSE 3000
 CMD ["node", "dist/apps/api-gateway/main"]
