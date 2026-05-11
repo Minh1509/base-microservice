@@ -1,77 +1,88 @@
 {
-  "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "plansDirectory": ".claude/plans",
-  "permissions": {
-    "allow": [
-      "Read(**/*)",
-      "Bash(pnpm install)",
-      "Bash(pnpm install:*)",
-      "Bash(pnpm add:*)",
-      "Bash(pnpm remove:*)",
-      "Bash(pnpm dev)",
-      "Bash(pnpm build)",
-      "Bash(pnpm build:*)",
-      "Bash(pnpm lint)",
-      "Bash(pnpm lint:*)",
-      "Bash(pnpm format)",
-      "Bash(pnpm start:*)",
-      "Bash(pnpm test)",
-      "Bash(pnpm test:*)",
-      "Bash(pnpm jest)",
-      "Bash(pnpm jest:*)",
-      "Bash(pnpm exec:*)",
-      "Bash(pnpm dlx:*)",
-      "Bash(pnpm run:*)",
-      "Bash(npx nest:*)",
-      "Bash(nest:*)",
-      "Bash(turbo:*)",
-      "Bash(tsc:*)",
-      "Bash(node --version)",
-      "Bash(pnpm --version)",
-      "Bash(git status)",
-      "Bash(git status:*)",
-      "Bash(git diff)",
-      "Bash(git diff:*)",
-      "Bash(git log)",
-      "Bash(git log:*)",
-      "Bash(git show)",
-      "Bash(git show:*)",
-      "Bash(git branch)",
-      "Bash(git branch:*)",
-      "Bash(git rev-parse:*)",
-      "Bash(git remote:*)",
-      "Bash(git config --get:*)",
-      "Bash(git add:*)",
-      "Bash(git restore:*)",
-      "Bash(git stash list)",
-      "Bash(git stash show:*)",
-      "Bash(grep:*)",
-      "Bash(rg:*)",
-      "Bash(find:*)",
-      "Bash(sed:*)",
-      "Bash(awk:*)",
-      "Bash(head:*)",
-      "Bash(tail:*)",
-      "Bash(ls:*)",
-      "Bash(cat:*)",
-      "Bash(echo:*)",
-      "Bash(pwd)",
-      "Bash(which:*)"
+  // Cấu hình Claude Code: hooks, status line, automation
+  "includeCoAuthoredBy": false,
+
+  "statusLine": {
+    "type": "command",
+    "command": "node .claude/statusline.cjs",
+    "padding": 0
+  },
+
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/session-init.cjs",
+            "timeout": 5
+          }
+        ]
+      }
     ],
-    "deny": [
-      "Bash(rm -rf /:*)",
-      "Bash(rm -rf ~:*)",
-      "Bash(rm -rf ~/:*)",
-      "Bash(git push --force:*)",
-      "Bash(git push -f:*)",
-      "Bash(git push --force-with-lease:*)",
-      "Bash(git reset --hard:*)",
-      "Bash(git clean -fd:*)",
-      "Bash(git branch -D:*)",
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Read(**/.env)",
-      "Read(**/.env.*)"
+
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/dev-rules-reminder.cjs",
+            "timeout": 3
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/security-reminder.cjs",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+
+    "PreToolUse": [
+      {
+        "matcher": "Read|Write|Edit|MultiEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/privacy-block.cjs",
+            "timeout": 3
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/protected-files-block.cjs",
+            "timeout": 3
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/minimal-diff-enforcer.cjs",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/post-edit-review.cjs",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/post-edit-simplify-reminder.cjs",
+            "timeout": 3
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/write-checkpoint.cjs",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }

@@ -1,0 +1,35 @@
+# Build output and dependencies
+node_modules/
+dist/
+build/
+.turbo/
+
+# Logs and temporary files
+*.log
+logs/
+temp/
+.tmp/
+.temp/
+
+# Data and large files
+data/
+pnpm-lock.yaml
+
+# Environment and credentials
+.env
+.env.*
+!.env.example
+!.env.shared.example
+apps/*/.env
+
+# Version control and IDEs
+.git/
+.husky/
+.vscode/
+.idea/
+
+# Secret
+secret/
+
+
+

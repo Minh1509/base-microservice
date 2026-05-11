@@ -1,0 +1,1 @@
+// Khi mở Claude: load context, rules, checkpoint

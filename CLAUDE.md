@@ -190,3 +190,64 @@ DTO cả request lẫn response ở `libs/dto/src/<domain>/{name}.dto.ts` + `{na
 - Prettier: single quotes, trailing commas, 90 cols, sort imports.
 - ValidationPipe global ở api-gateway + 2 microservice (whitelist/transform/forbidNonWhitelisted, 422).
 - DTO + pattern là cross-service contract → sống trong `libs/{dto,common/constants}`, không trong app.
+
+.claude/
+├── settings.json
+
+# File cấu hình Claude Code:
+
+# hooks, automation, status line, behavior
+
+├── CLAUDE.md
+
+# Prompt gốc của project:
+
+# stack, coding principles, global instructions
+
+├── commands/
+
+# Shortcut commands (/refactor, /checkpoint...)
+
+# để gọi nhanh các prompt lặp lại
+
+├── skills/
+
+# Playbooks / SOP cho từng loại task
+
+# (refactor, debug, review, generate...)
+
+├── rules/
+
+# Luật bắt buộc Claude phải tuân theo
+
+# (NestJS, API, DB, testing, security...)
+
+├── context/
+
+# Kiến thức nền về project/domain
+
+# Claude đọc để hiểu hệ thống trước khi làm
+
+├── templates/
+
+# Code mẫu chuẩn team
+
+# Claude dùng để generate code đúng format
+
+├── memory/
+
+# “Trí nhớ” của Claude:
+
+# architecture decisions, naming conventions, checkpoints
+
+├── hooks/
+
+# Script tự động chạy theo lifecycle
+
+# (session start, trước/sau edit, checkpoint...)
+
+└── mcp/
+
+# Cấu hình kết nối tool ngoài
+
+# (filesystem, postgres, github, docker...)

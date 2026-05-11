@@ -1,0 +1,1 @@
+// Ép Claude chỉ sửa tối thiểu, không rewrite cả file

@@ -1,0 +1,1 @@
+// Chặn đọc file nhạy cảm(.env, secrets)

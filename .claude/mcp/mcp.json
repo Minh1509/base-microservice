@@ -1,0 +1,5 @@
+{
+  // Cấu hình MCP tools: filesystem, postgres, github, docker
+  "command": "bash",
+  "args": ["-c", "npx @modelcontextprotocol/server-filesystem"]
+}
