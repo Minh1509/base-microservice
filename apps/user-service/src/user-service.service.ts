@@ -1,9 +1,9 @@
 import { AppLogger } from '@app/common';
 import { appConfig } from '@app/config';
-import { PingUserDto } from '@app/dto';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { Logger } from 'winston';
+import { PingUserDto } from './dto';
 
 @Injectable()
 export class UserServiceService {

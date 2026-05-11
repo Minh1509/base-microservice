@@ -6,12 +6,10 @@ import {
   kafkaConfig,
 } from '@app/config';
 import { DatabaseModule } from '@app/database';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { AuthServiceController } from './auth-service.controller';
 import { AuthServiceService } from './auth-service.service';
 import { CreateAdminCommand } from '../commands/create-admin.command';
-import { UserEntity } from '../entities/user.entity';
 
 @Module({
   imports: [

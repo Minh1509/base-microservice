@@ -9,8 +9,12 @@ export class AppLogger implements LoggerService {
     private readonly logger: Logger,
   ) {}
 
-  child(context: string): AppLogger {
-    return new AppLogger(this.logger.child({ context }));
+  child(context: string): Logger;
+  child(meta: Record<string, unknown>): Logger;
+  child(contextOrMeta: string | Record<string, unknown>): Logger {
+    const meta =
+      typeof contextOrMeta === 'string' ? { context: contextOrMeta } : contextOrMeta;
+    return this.logger.child(meta);
   }
 
   log(message: string, meta?: Record<string, unknown>) {

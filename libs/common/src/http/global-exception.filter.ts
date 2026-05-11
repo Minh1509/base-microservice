@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { HttpErrorResponse } from './http-error';
+import { statusToCode } from './status-code.map';
 
 @Catch()
 export class GlobalHttpExceptionFilter implements ExceptionFilter {
@@ -18,123 +19,70 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
     const req = ctx.getRequest<Request>();
+    const timestamp = new Date().toISOString();
+    const path = req.url;
 
-    const { status, body } = this.toResponse(exception, req.url);
+    let status: number;
+    let body: HttpErrorResponse;
+
+    if (exception instanceof UnprocessableEntityException) {
+      const resp = exception.getResponse() as Record<string, unknown>;
+      const msg = typeof resp === 'object' && resp ? resp.message : undefined;
+      status = HttpStatus.UNPROCESSABLE_ENTITY;
+      body = {
+        code: 'VALIDATION_FAILED',
+        message: 'Request validation failed',
+        details: Array.isArray(msg)
+          ? msg
+          : [typeof msg === 'string' ? msg : 'Invalid payload'],
+        timestamp,
+        path,
+      };
+    } else if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      const resp = exception.getResponse();
+      const r =
+        typeof resp === 'object' && resp !== null
+          ? (resp as Record<string, unknown>)
+          : null;
+      const hasCode = r !== null && typeof r.code === 'string';
+
+      if (hasCode && r) {
+        body = {
+          code: r.code as string,
+          message: typeof r.message === 'string' ? r.message : exception.message,
+          details: r.details,
+          timestamp,
+          path,
+        };
+      } else {
+        const message =
+          typeof resp === 'string'
+            ? resp
+            : r && typeof r.message === 'string'
+              ? r.message
+              : exception.message;
+        body = { code: statusToCode(status), message, timestamp, path };
+      }
+    } else {
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
+      body = {
+        code: 'INTERNAL_ERROR',
+        message: exception instanceof Error ? exception.message : 'Internal error',
+        timestamp,
+        path,
+      };
+    }
 
     if (status >= 500) {
       this.logger.error(
-        `[${body.code}] ${body.message} (${req.method} ${req.url})`,
+        `[${body.code}] ${body.message} (${req.method} ${path})`,
         exception instanceof Error ? exception.stack : undefined,
       );
     } else {
-      this.logger.warn(`[${body.code}] ${body.message} (${req.method} ${req.url})`);
+      this.logger.warn(`[${body.code}] ${body.message} (${req.method} ${path})`);
     }
 
     res.status(status).json(body);
-  }
-
-  private toResponse(
-    exception: unknown,
-    path: string,
-  ): { status: number; body: HttpErrorResponse } {
-    const timestamp = new Date().toISOString();
-
-    if (exception instanceof UnprocessableEntityException) {
-      const resp = exception.getResponse();
-      const details = this.extractValidationMessages(resp);
-      return {
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        body: {
-          code: 'VALIDATION_FAILED',
-          message: 'Request validation failed',
-          details,
-          timestamp,
-          path,
-        },
-      };
-    }
-
-    if (exception instanceof HttpException) {
-      const resp = exception.getResponse();
-      const status = exception.getStatus();
-
-      // Body đã có shape { code, message, details? } từ sendRpc → giữ nguyên.
-      if (this.hasCodeShape(resp)) {
-        return {
-          status,
-          body: {
-            code: resp.code,
-            message: resp.message,
-            details: resp.details,
-            timestamp,
-            path,
-          },
-        };
-      }
-
-      const message =
-        typeof resp === 'string'
-          ? resp
-          : ((resp as { message?: string }).message ?? exception.message);
-
-      return {
-        status,
-        body: {
-          code: this.statusToCode(status),
-          message,
-          timestamp,
-          path,
-        },
-      };
-    }
-
-    const err = exception as Error;
-    return {
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      body: {
-        code: 'INTERNAL_ERROR',
-        message: err?.message ?? 'Internal error',
-        timestamp,
-        path,
-      },
-    };
-  }
-
-  private hasCodeShape(
-    resp: unknown,
-  ): resp is { code: string; message: string; details?: unknown } {
-    if (typeof resp !== 'object' || resp === null) return false;
-    const v = resp as Record<string, unknown>;
-    return typeof v.code === 'string' && typeof v.message === 'string';
-  }
-
-  private extractValidationMessages(resp: unknown): string[] {
-    if (typeof resp === 'object' && resp !== null) {
-      const msg = (resp as { message?: unknown }).message;
-      if (Array.isArray(msg)) return msg as string[];
-      if (typeof msg === 'string') return [msg];
-    }
-    return ['Invalid payload'];
-  }
-
-  private statusToCode(status: number): string {
-    switch (status) {
-      case 400:
-        return 'BAD_REQUEST';
-      case 401:
-        return 'UNAUTHORIZED';
-      case 403:
-        return 'FORBIDDEN';
-      case 404:
-        return 'NOT_FOUND';
-      case 409:
-        return 'CONFLICT';
-      case 422:
-        return 'VALIDATION_FAILED';
-      case 504:
-        return 'UPSTREAM_TIMEOUT';
-      default:
-        return status >= 500 ? 'INTERNAL_ERROR' : 'CLIENT_ERROR';
-    }
   }
 }

@@ -1,9 +1,10 @@
 import { AppLogger } from '@app/common';
 import { appConfig } from '@app/config';
-import { PingAuthDto } from '@app/dto';
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
+import { RpcException } from '@nestjs/microservices';
 import { Logger } from 'winston';
+import { LoginDto, PingAuthDto } from './dto';
 
 @Injectable()
 export class AuthServiceService {
@@ -25,5 +26,20 @@ export class AuthServiceService {
       echo: payload ?? null,
       ts: new Date().toISOString(),
     };
+  }
+
+  login(payload: LoginDto) {
+    this.logger.info('Login attempt', { email: payload.email });
+
+    // Demo: hardcoded check — replace with real DB lookup later
+    if (payload.email !== 'admin@local.dev' || payload.password !== 'password123') {
+      throw new RpcException({
+        status: HttpStatus.UNAUTHORIZED,
+        code: 'INVALID_CREDENTIALS',
+        message: 'Email or password is incorrect',
+      });
+    }
+
+    return { accessToken: 'fake-jwt-token-for-demo' };
   }
 }

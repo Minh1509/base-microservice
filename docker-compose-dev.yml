@@ -33,7 +33,7 @@ services:
       retries: 10
 
   kafka:
-    image: bitnami/kafka:3.7
+    image: bitnami/kafka:latest
     container_name: bm-kafka
     restart: unless-stopped
     ports:

@@ -11,6 +11,7 @@ import {
 import { RpcException } from '@nestjs/microservices';
 import { Observable, throwError } from 'rxjs';
 import { isRpcErrorPayload, RpcErrorPayload } from './rpc-error';
+import { statusToCode } from '../http/status-code.map';
 
 @Catch()
 export class RpcExceptionFilter implements ExceptionFilter {
@@ -42,69 +43,45 @@ export class RpcExceptionFilter implements ExceptionFilter {
       };
     }
 
-    // ValidationPipe throw UnprocessableEntityException (gateway dùng 422),
-    // nhưng ở microservice side default vẫn là BadRequestException nếu
-    // chưa cấu hình. Map cả hai → 422 để nhất quán.
     if (
       exception instanceof UnprocessableEntityException ||
       exception instanceof BadRequestException
     ) {
-      const resp = exception.getResponse();
-      const messages = this.extractValidationMessages(resp);
+      const resp = exception.getResponse() as Record<string, unknown>;
+      const msg = resp.message;
       return {
         status: HttpStatus.UNPROCESSABLE_ENTITY,
         code: 'VALIDATION_FAILED',
         message: 'Request validation failed',
-        details: messages,
+        details: Array.isArray(msg)
+          ? msg
+          : [typeof msg === 'string' ? msg : 'Invalid payload'],
       };
     }
 
     if (exception instanceof HttpException) {
       const resp = exception.getResponse();
+      const r =
+        typeof resp === 'object' && resp !== null
+          ? (resp as Record<string, unknown>)
+          : null;
       const message =
         typeof resp === 'string'
           ? resp
-          : (((resp as Record<string, unknown>).message as string) ?? exception.message);
+          : r && typeof r.message === 'string'
+            ? r.message
+            : exception.message;
       return {
         status: exception.getStatus(),
-        code: this.statusToCode(exception.getStatus()),
+        code: statusToCode(exception.getStatus()),
         message,
       };
     }
 
-    const err = exception as Error;
     return {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       code: 'INTERNAL_ERROR',
-      message: err?.message ?? 'Internal error',
+      message: exception instanceof Error ? exception.message : 'Internal error',
     };
-  }
-
-  private extractValidationMessages(resp: unknown): string[] {
-    if (typeof resp === 'object' && resp !== null) {
-      const msg = (resp as Record<string, unknown>).message;
-      if (Array.isArray(msg)) return msg as string[];
-      if (typeof msg === 'string') return [msg];
-    }
-    return ['Invalid payload'];
-  }
-
-  private statusToCode(status: number): string {
-    switch (status) {
-      case 400:
-        return 'BAD_REQUEST';
-      case 401:
-        return 'UNAUTHORIZED';
-      case 403:
-        return 'FORBIDDEN';
-      case 404:
-        return 'NOT_FOUND';
-      case 409:
-        return 'CONFLICT';
-      case 422:
-        return 'VALIDATION_FAILED';
-      default:
-        return status >= 500 ? 'INTERNAL_ERROR' : 'CLIENT_ERROR';
-    }
   }
 }

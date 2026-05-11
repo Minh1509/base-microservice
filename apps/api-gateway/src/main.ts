@@ -1,8 +1,15 @@
-import { buildWinstonOptions, GlobalHttpExceptionFilter } from '@app/common';
+import {
+  buildWinstonOptions,
+  GlobalHttpExceptionFilter,
+  setupSwagger,
+} from '@app/common';
 import { appConfig } from '@app/config';
-import { HttpStatus, ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 import { WinstonModule } from 'nest-winston';
 import { ApiGatewayModule } from './api-gateway.module';
 
@@ -11,8 +18,27 @@ async function bootstrap() {
     buildWinstonOptions({ serviceName: 'api-gateway' }),
   );
 
-  const app = await NestFactory.create(ApiGatewayModule, { logger });
+  const app = await NestFactory.create<NestExpressApplication>(ApiGatewayModule, {
+    logger,
+  });
 
+  const cfg = app.get<ConfigType<typeof appConfig>>(appConfig.KEY);
+  const isProduction = cfg.env === 'production';
+
+  app.enableCors({ origin: '*' });
+  app.set('trust proxy', cfg.trustProxy);
+  app.use(helmet());
+
+  app.use(
+    rateLimit({
+      windowMs: 60 * 1000,
+      limit: 500,
+      standardHeaders: 'draft-7',
+      legacyHeaders: false,
+    }),
+  );
+
+  const reflector = app.get(Reflector);
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -21,9 +47,17 @@ async function bootstrap() {
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
     }),
   );
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
 
-  const cfg = app.get<ConfigType<typeof appConfig>>(appConfig.KEY);
+  setupSwagger(app);
   await app.listen(cfg.port);
+
+  if (!isProduction) {
+    logger.log({
+      message: `Application ready. Swagger at http://localhost:${cfg.port}/swagger`,
+      context: 'Application',
+    });
+  }
 }
 void bootstrap();
