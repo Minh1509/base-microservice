@@ -1,6 +1,6 @@
-import { buildWinstonOptions, RpcExceptionFilter } from '@app/common';
+import { PayloadValidationPipe, RpcExceptionFilter } from '@app/common';
 import { kafkaConfig } from '@app/config';
-import { HttpStatus, ValidationPipe } from '@nestjs/common';
+import { buildWinstonOptions } from '@app/logger';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { type MicroserviceOptions, Transport } from '@nestjs/microservices';
@@ -37,14 +37,7 @@ async function bootstrap() {
     },
   );
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      forbidNonWhitelisted: true,
-      errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    }),
-  );
+  app.useGlobalPipes(new PayloadValidationPipe());
   app.useGlobalFilters(new RpcExceptionFilter());
 
   await app.listen();

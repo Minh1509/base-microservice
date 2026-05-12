@@ -49,6 +49,7 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/jwt": "^11.0.2",
     "@nestjs/microservices": "^11.1.19",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.4.2",
@@ -127,10 +128,14 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
+      "^@app/cache(|/.*)$": "<rootDir>/libs/cache/src/$1",
       "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
       "^@app/database(|/.*)$": "<rootDir>/libs/database/src/$1",
-      "^@app/dto(|/.*)$": "<rootDir>/libs/dto/src/$1"
+      "^@app/dto(|/.*)$": "<rootDir>/libs/dto/src/$1",
+      "^@app/logger(|/.*)$": "<rootDir>/libs/logger/src/$1",
+      "^@app/queue(|/.*)$": "<rootDir>/libs/queue/src/$1",
+      "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1"
     }
   }
 }

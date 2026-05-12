@@ -1,1 +1,1 @@
-export * from './ping.dto';
+export { PingUserDto } from '@app/shared';

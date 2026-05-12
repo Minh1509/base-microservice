@@ -1,4 +1,4 @@
-import { USER_PATTERNS } from '@app/common';
+import { USER_PATTERNS } from '@app/shared';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { PingUserDto } from './dto';

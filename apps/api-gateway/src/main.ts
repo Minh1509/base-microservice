@@ -1,10 +1,12 @@
 import {
-  buildWinstonOptions,
   GlobalHttpExceptionFilter,
+  LoggingInterceptor,
+  PayloadValidationPipe,
   setupSwagger,
 } from '@app/common';
 import { appConfig } from '@app/config';
-import { ClassSerializerInterceptor, HttpStatus, ValidationPipe } from '@nestjs/common';
+import { buildWinstonOptions } from '@app/logger';
+import { ClassSerializerInterceptor } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -39,15 +41,11 @@ async function bootstrap() {
   );
 
   const reflector = app.get(Reflector);
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      forbidNonWhitelisted: true,
-      errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    }),
+  app.useGlobalPipes(new PayloadValidationPipe());
+  app.useGlobalInterceptors(
+    new LoggingInterceptor(),
+    new ClassSerializerInterceptor(reflector),
   );
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
 
   setupSwagger(app);

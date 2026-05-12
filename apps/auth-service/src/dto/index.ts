@@ -1,2 +1,1 @@
-export * from './login.dto';
-export * from './ping.dto';
+export { LoginDto, PingAuthDto } from '@app/shared';

@@ -1,24 +1,20 @@
+import { AppLogger } from '@app/logger';
+import { AUTH_SERVICE, sendRpc, USER_SERVICE } from '@app/queue';
 import {
   ALL_AUTH_PATTERNS,
   ALL_USER_PATTERNS,
-  AppLogger,
   AUTH_PATTERNS,
-  AUTH_SERVICE,
-  sendRpc,
-  USER_PATTERNS,
-  USER_SERVICE,
-} from '@app/common';
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
-import { Logger } from 'winston';
-import {
   LoginDto,
   LoginResponseDto,
   PingAuthDto,
   PingAuthResponseDto,
   PingUserDto,
   PingUserResponseDto,
-} from './dto';
+  USER_PATTERNS,
+} from '@app/shared';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { ClientKafka } from '@nestjs/microservices';
+import { Logger } from 'winston';
 
 @Injectable()
 export class ApiGatewayService implements OnModuleInit {

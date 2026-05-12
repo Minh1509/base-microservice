@@ -1,1 +1,1 @@
-export * from './patterns';
+export * from './error-response.constants';

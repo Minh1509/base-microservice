@@ -1,5 +1,5 @@
-import { AppLogger } from '@app/common';
 import { appConfig } from '@app/config';
+import { AppLogger } from '@app/logger';
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { RpcException } from '@nestjs/microservices';
@@ -31,11 +31,10 @@ export class AuthServiceService {
   login(payload: LoginDto) {
     this.logger.info('Login attempt', { email: payload.email });
 
-    // Demo: hardcoded check — replace with real DB lookup later
     if (payload.email !== 'admin@local.dev' || payload.password !== 'password123') {
       throw new RpcException({
-        status: HttpStatus.UNAUTHORIZED,
-        code: 'INVALID_CREDENTIALS',
+        statusCode: HttpStatus.UNAUTHORIZED,
+        errorCode: 'INVALID_CREDENTIALS',
         message: 'Email or password is incorrect',
       });
     }

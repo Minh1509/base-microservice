@@ -1,5 +1,3 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ApiGatewayService } from './api-gateway.service';
 import {
   LoginDto,
   LoginResponseDto,
@@ -7,7 +5,9 @@ import {
   PingAuthResponseDto,
   PingUserDto,
   PingUserResponseDto,
-} from './dto';
+} from '@app/shared';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { ApiGatewayService } from './api-gateway.service';
 
 @Controller()
 export class ApiGatewayController {
