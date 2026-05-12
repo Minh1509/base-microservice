@@ -1,5 +1,4 @@
 {
-  // Cấu hình Claude Code: hooks, status line, automation
   "includeCoAuthoredBy": false,
 
   "statusLine": {
@@ -11,7 +10,6 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "startup|resume",
         "hooks": [
           {
             "type": "command",
@@ -34,6 +32,11 @@
             "type": "command",
             "command": "node .claude/hooks/security-reminder.cjs",
             "timeout": 3
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/context-tracking.cjs",
+            "timeout": 3
           }
         ]
       }
@@ -41,7 +44,7 @@
 
     "PreToolUse": [
       {
-        "matcher": "Read|Write|Edit|MultiEdit|Bash",
+        "matcher": "Read|Write|Edit|MultiEdit|Bash|Glob|Grep",
         "hooks": [
           {
             "type": "command",
@@ -51,6 +54,11 @@
           {
             "type": "command",
             "command": "node .claude/hooks/protected-files-block.cjs",
+            "timeout": 3
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/scout-block.cjs",
             "timeout": 3
           },
           {
@@ -79,6 +87,18 @@
           {
             "type": "command",
             "command": "node .claude/hooks/write-checkpoint.cjs",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/usage-context-awareness.cjs",
             "timeout": 5
           }
         ]

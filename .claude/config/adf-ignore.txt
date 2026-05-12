@@ -1,0 +1,1 @@
+# adf-ignore.txt — Danh sách path bị chặn khi Claude đọc/ghi/glob (gitignore-style)

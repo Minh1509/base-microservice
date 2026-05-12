@@ -1,0 +1,59 @@
+{
+  "plan": {
+    "namingFormat": "{date}-{issue}-{slug}",
+    "dateFormat": "YYMMDD-HHmm",
+    "issuePrefix": null,
+    "reportsDir": "reports",
+    "resolution": {
+      "order": ["session", "branch"],
+      "branchPattern": "(?:feat|fix|chore|refactor|docs)/(?:[^/]+/)?(.+)"
+    },
+    "validation": {
+      "mode": "prompt",
+      "minQuestions": 3,
+      "maxQuestions": 8,
+      "focusAreas": ["assumptions", "risks", "tradeoffs", "architecture"]
+    }
+  },
+  "paths": {
+    "docs": "docs",
+    "plans": "plans"
+  },
+  "docs": {
+    "maxLoc": 800
+  },
+  "locale": {
+    "thinkingLanguage": "en",
+    "responseLanguage": "vi"
+  },
+  "trust": {
+    "passphrase": null,
+    "enabled": false
+  },
+  "project": {
+    "type": "monorepo",
+    "packageManager": "pnpm",
+    "framework": "nestjs"
+  },
+  "skills": {
+    "research": {
+      "useGemini": false
+    }
+  },
+  "assertions": [],
+  "statusline": "full",
+  "hooks": {
+    "session-init": true,
+    "dev-rules-reminder": true,
+    "security-reminder": true,
+    "usage-context-awareness": true,
+    "context-tracking": true,
+    "scout-block": true,
+    "privacy-block": true,
+    "protected-files-block": true,
+    "minimal-diff-enforcer": true,
+    "post-edit-review": true,
+    "post-edit-simplify-reminder": true,
+    "write-checkpoint": true
+  }
+}
