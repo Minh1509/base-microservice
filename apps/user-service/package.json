@@ -7,6 +7,14 @@
     "build": "pnpm -w exec nest build user-service",
     "start": "node ../../dist/apps/user-service/main",
     "lint": "eslint src --max-warnings=0",
-    "test": "pnpm -w exec jest apps/user-service --passWithNoTests"
+    "test": "pnpm -w exec jest apps/user-service --passWithNoTests",
+    "mikro": "cross-env MIKRO_ORM_CLI_CONFIG=apps/user-service/mikro-orm.config.ts pnpm -w exec mikro-orm",
+    "migration:create": "pnpm mikro migration:create --blank --name",
+    "migration:run": "pnpm mikro migration:up",
+    "migration:revert": "pnpm mikro migration:down",
+    "migration:fresh": "pnpm mikro migration:fresh",
+    "seed": "pnpm mikro seeder:run",
+    "seed:only": "pnpm mikro seeder:run --class",
+    "command:run": "cross-env MIKRO_ORM_CLI_CONFIG=apps/user-service/mikro-orm.config.ts pnpm -w exec ts-node -r tsconfig-paths/register apps/user-service/src/cli.ts"
   }
 }

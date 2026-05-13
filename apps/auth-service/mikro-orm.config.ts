@@ -19,7 +19,7 @@ export default defineConfig({
   user: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   dbName: process.env.POSTGRES_DB, // auth_db
-  entities: ['dist/apps/auth-service/entities/**/*.entity.js'],
+  entities: ['apps/auth-service/entities/**/*.entity.ts'],
   entitiesTs: ['apps/auth-service/entities/**/*.entity.ts'],
   metadataProvider: TsMorphMetadataProvider,
   extensions: [Migrator, SeedManager],

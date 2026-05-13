@@ -4,6 +4,6 @@
     "declaration": false,
     "outDir": "../../dist/apps/user-service"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "entities/**/*", "commands/**/*"],
   "exclude": ["node_modules", "dist", "test", "database", "**/*spec.ts"]
 }
