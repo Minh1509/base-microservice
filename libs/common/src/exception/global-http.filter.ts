@@ -23,8 +23,6 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
     const logMessage = `[${body.statusCode}] ${body.message}`;
     if (status >= 500) {
       this.logger.error(logMessage, exception instanceof Error ? exception.stack : '');
-    } else {
-      this.logger.error(logMessage);
     }
     res.status(status).json(body);
   }

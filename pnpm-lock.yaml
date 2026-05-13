@@ -49,6 +49,9 @@ importers:
       bcrypt:
         specifier: ^6.0.0
         version: 6.0.0
+      chalk:
+        specifier: ^4.1.2
+        version: 4.1.2
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -198,6 +201,8 @@ importers:
 
   apps/user-service: {}
 
+  libs/cache: {}
+
   libs/common: {}
 
   libs/config: {}
@@ -205,6 +210,12 @@ importers:
   libs/database: {}
 
   libs/dto: {}
+
+  libs/logger: {}
+
+  libs/queue: {}
+
+  libs/shared: {}
 
 packages:
   '@angular-devkit/core@19.2.24':

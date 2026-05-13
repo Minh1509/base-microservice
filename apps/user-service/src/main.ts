@@ -1,4 +1,8 @@
-import { PayloadValidationPipe, RpcExceptionFilter } from '@app/common';
+import {
+  PayloadValidationPipe,
+  RpcExceptionFilter,
+  RpcLoggingInterceptor,
+} from '@app/common';
 import { kafkaConfig } from '@app/config';
 import { buildWinstonOptions } from '@app/logger';
 import { ConfigType } from '@nestjs/config';
@@ -28,7 +32,7 @@ async function bootstrap() {
           brokers: kafka.brokers,
           clientId: kafka.clientId,
           retry: {
-            initialRetryTime: 1000,
+            initialRetryTime: 2000,
             retries: 10,
           },
         },
@@ -39,6 +43,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new PayloadValidationPipe());
   app.useGlobalFilters(new RpcExceptionFilter());
+  app.useGlobalInterceptors(new RpcLoggingInterceptor());
 
   await app.listen();
 }

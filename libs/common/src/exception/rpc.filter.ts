@@ -18,14 +18,12 @@ export class RpcExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, _host: ArgumentsHost): Observable<never> {
     const payload = this.buildPayload(exception);
 
-    const logMessage = `[${payload.errorCode}] ${payload.message}`;
+    const logMessage = `[${payload.statusCode}] ${payload.details ?? payload.message}`;
     if (payload.statusCode >= 500) {
       this.logger.error(
         logMessage,
         exception instanceof Error ? exception.stack : undefined,
       );
-    } else {
-      this.logger.error(logMessage);
     }
 
     return throwError(() => new RpcException(payload));
