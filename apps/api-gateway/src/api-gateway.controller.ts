@@ -3,9 +3,8 @@ import {
   LoginResponseDto,
   PingAuthDto,
   PingAuthResponseDto,
-  PingUserDto,
-  PingUserResponseDto,
-} from '@app/contracts';
+} from '@app/contracts/auth';
+import { PingUserDto, PingUserResponseDto } from '@app/contracts/user';
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiGatewayService } from './api-gateway.service';
 

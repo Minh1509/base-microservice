@@ -3,4 +3,4 @@ export {
   LoginResponseDto,
   PingAuthDto,
   PingAuthResponseDto,
-} from '@app/contracts';
+} from '@app/contracts/auth';

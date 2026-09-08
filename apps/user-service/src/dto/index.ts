@@ -1,1 +1,1 @@
-export { PingUserDto } from '@app/contracts';
+export { PingUserDto } from '@app/contracts/user';

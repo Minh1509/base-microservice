@@ -22,7 +22,7 @@ const {
   resolvePlanPath,
   getReportsPath,
   resolveNamingPattern,
-  normalizePath
+  normalizePath,
 } = require('./ck-config-utils.cjs');
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -57,7 +57,12 @@ function resolveRulesPath(filename, configDirName = '.claude') {
   if (fs.existsSync(globalRulesPath)) return `~/.claude/rules/${filename}`;
 
   // Backward compat: try workflows/ (legacy location)
-  const localWorkflowsPath = path.join(process.cwd(), configDirName, 'workflows', filename);
+  const localWorkflowsPath = path.join(
+    process.cwd(),
+    configDirName,
+    'workflows',
+    filename,
+  );
   const globalWorkflowsPath = path.join(os.homedir(), '.claude', 'workflows', filename);
 
   if (fs.existsSync(localWorkflowsPath)) return `${configDirName}/workflows/${filename}`;
@@ -90,8 +95,22 @@ function resolveSkillsVenv(configDirName = '.claude') {
   const venvBin = isWindows ? 'Scripts' : 'bin';
   const pythonExe = isWindows ? 'python.exe' : 'python3';
 
-  const localVenv = path.join(process.cwd(), configDirName, 'skills', '.venv', venvBin, pythonExe);
-  const globalVenv = path.join(os.homedir(), '.claude', 'skills', '.venv', venvBin, pythonExe);
+  const localVenv = path.join(
+    process.cwd(),
+    configDirName,
+    'skills',
+    '.venv',
+    venvBin,
+    pythonExe,
+  );
+  const globalVenv = path.join(
+    os.homedir(),
+    '.claude',
+    'skills',
+    '.venv',
+    venvBin,
+    pythonExe,
+  );
 
   if (fs.existsSync(localVenv)) {
     return isWindows
@@ -121,11 +140,12 @@ function buildPlanContext(sessionId, config) {
   // Compute naming pattern directly for reliable injection
   const namePattern = resolveNamingPattern(plan, gitBranch);
 
-  const planLine = resolved.resolvedBy === 'session'
-    ? `- Plan: ${resolved.path}`
-    : resolved.resolvedBy === 'branch'
-      ? `- Plan: none | Suggested: ${resolved.path}`
-      : `- Plan: none`;
+  const planLine =
+    resolved.resolvedBy === 'session'
+      ? `- Plan: ${resolved.path}`
+      : resolved.resolvedBy === 'branch'
+        ? `- Plan: none | Suggested: ${resolved.path}`
+        : `- Plan: none`;
 
   // Validation config (injected so LLM can reference it)
   const validation = plan.validation || {};
@@ -133,7 +153,15 @@ function buildPlanContext(sessionId, config) {
   const validationMin = validation.minQuestions || 3;
   const validationMax = validation.maxQuestions || 8;
 
-  return { reportsPath, gitBranch, planLine, namePattern, validationMode, validationMin, validationMax };
+  return {
+    reportsPath,
+    gitBranch,
+    planLine,
+    namePattern,
+    validationMode,
+    validationMin,
+    validationMax,
+  };
 }
 
 /**
@@ -146,7 +174,10 @@ function wasRecentlyInjected(transcriptPath) {
     if (!transcriptPath || !fs.existsSync(transcriptPath)) return false;
     const transcript = fs.readFileSync(transcriptPath, 'utf-8');
     // Check last 150 lines (hook output is ~30 lines, so this covers ~5 user prompts)
-    return transcript.split('\n').slice(-150).some(line => line.includes('[IMPORTANT] Consider Modularization'));
+    return transcript
+      .split('\n')
+      .slice(-150)
+      .some((line) => line.includes('[IMPORTANT] Consider Modularization'));
   } catch (e) {
     return false;
   }
@@ -173,7 +204,9 @@ function buildLanguageSection({ thinkingLanguage, responseLanguage }) {
   if (hasThinking || hasResponse) {
     lines.push(`## Language`);
     if (hasThinking) {
-      lines.push(`- Thinking: Use ${effectiveThinking} for reasoning (logic, precision).`);
+      lines.push(
+        `- Thinking: Use ${effectiveThinking} for reasoning (logic, precision).`,
+      );
     }
     if (hasResponse) {
       lines.push(`- Response: Respond in ${responseLanguage} (natural, fluent).`);
@@ -195,7 +228,7 @@ function buildSessionSection(staticEnv = {}) {
     `- DateTime: ${new Date().toLocaleString()}`,
     `- CWD: ${staticEnv.cwd || process.cwd()}`,
     `- Subagents: 200K token context limit each — delegate tasks scoped, not broad.`,
-    ``
+    ``,
   ];
 }
 
@@ -212,7 +245,7 @@ function readUsageCache() {
         return cache.data;
       }
     }
-  } catch { }
+  } catch {}
   return null;
 }
 
@@ -224,7 +257,8 @@ function readUsageCache() {
 function formatTimeUntilReset(resetAt) {
   if (!resetAt) return null;
   const resetTime = new Date(resetAt);
-  const remaining = Math.floor(resetTime.getTime() / 1000) - Math.floor(Date.now() / 1000);
+  const remaining =
+    Math.floor(resetTime.getTime() / 1000) - Math.floor(Date.now() / 1000);
   if (remaining <= 0 || remaining > 18000) return null; // Only show if < 5 hours
   const hours = Math.floor(remaining / 3600);
   const mins = Math.floor((remaining % 3600) / 60);
@@ -270,9 +304,13 @@ function buildContextSection(sessionId) {
 
     // Warning if high usage
     if (data.percent >= CRITICAL_THRESHOLD) {
-      lines.push(`- **CRITICAL:** Context nearly full - consider compaction or being concise, update current phase's status before the compaction.`);
+      lines.push(
+        `- **CRITICAL:** Context nearly full - consider compaction or being concise, update current phase's status before the compaction.`,
+      );
     } else if (data.percent >= WARN_THRESHOLD) {
-      lines.push(`- **WARNING:** Context usage moderate - being concise and optimize token efficiency.`);
+      lines.push(
+        `- **WARNING:** Context usage moderate - being concise and optimize token efficiency.`,
+      );
     }
 
     lines.push(``);
@@ -329,7 +367,13 @@ function buildUsageSection() {
  * @param {string} [params.docsPath] - Absolute docs path
  * @returns {string[]} Lines for rules section
  */
-function buildRulesSection({ devRulesPath, catalogScript, skillsVenv, plansPath, docsPath }) {
+function buildRulesSection({
+  devRulesPath,
+  catalogScript,
+  skillsVenv,
+  plansPath,
+  docsPath,
+}) {
   const lines = [`## Rules`];
 
   if (devRulesPath) {
@@ -339,22 +383,34 @@ function buildRulesSection({ devRulesPath, catalogScript, skillsVenv, plansPath,
   // Issue #476: Use absolute paths to prevent LLM confusion in multi-CLAUDE.md projects
   const plansRef = plansPath || 'plans';
   const docsRef = docsPath || 'docs';
-  lines.push(`- Markdown files are organized in: Plans → "${plansRef}" directory, Docs → "${docsRef}" directory`);
-  lines.push(`- **IMPORTANT:** DO NOT create markdown files outside of "${plansRef}" or "${docsRef}" UNLESS the user explicitly requests it.`);
+  lines.push(
+    `- Markdown files are organized in: Plans → "${plansRef}" directory, Docs → "${docsRef}" directory`,
+  );
+  lines.push(
+    `- **IMPORTANT:** DO NOT create markdown files outside of "${plansRef}" or "${docsRef}" UNLESS the user explicitly requests it.`,
+  );
 
   if (catalogScript) {
-    lines.push(`- Activate skills: Run \`python ${catalogScript} --skills\` to generate a skills catalog and analyze it, then activate the relevant skills that are needed for the task during the process.`);
+    lines.push(
+      `- Activate skills: Run \`python ${catalogScript} --skills\` to generate a skills catalog and analyze it, then activate the relevant skills that are needed for the task during the process.`,
+    );
   }
 
   if (skillsVenv) {
     lines.push(`- Python scripts in .claude/skills/: Use \`${skillsVenv}\``);
   }
 
-  lines.push(`- When skills' scripts are failed to execute, always fix them and run again, repeat until success.`);
-  lines.push(`- Follow **YAGNI (You Aren't Gonna Need It) - KISS (Keep It Simple, Stupid) - DRY (Don't Repeat Yourself)** principles`);
+  lines.push(
+    `- When skills' scripts are failed to execute, always fix them and run again, repeat until success.`,
+  );
+  lines.push(
+    `- Follow **YAGNI (You Aren't Gonna Need It) - KISS (Keep It Simple, Stupid) - DRY (Don't Repeat Yourself)** principles`,
+  );
   lines.push(`- Sacrifice grammar for the sake of concision when writing reports.`);
   lines.push(`- In reports, list any unresolved questions at the end, if any.`);
-  lines.push(`- IMPORTANT: Ensure token consumption efficiency while maintaining high quality.`);
+  lines.push(
+    `- IMPORTANT: Ensure token consumption efficiency while maintaining high quality.`,
+  );
   lines.push(``);
 
   return lines;
@@ -373,7 +429,7 @@ function buildModularizationSection() {
     `- Write descriptive code comments`,
     `- After modularization, continue with main task`,
     `- When not to modularize: Markdown files, plain text files, bash scripts, configuration files, environment variables files, etc.`,
-    ``
+    ``,
   ];
 }
 
@@ -390,7 +446,7 @@ function buildPathsSection({ reportsPath, plansPath, docsPath, docsMaxLoc = 800 
   return [
     `## Paths`,
     `Reports: ${reportsPath} | Plans: ${plansPath}/ | Docs: ${docsPath}/ | docs.maxLoc: ${docsMaxLoc}`,
-    ``
+    ``,
   ];
 }
 
@@ -405,18 +461,23 @@ function buildPathsSection({ reportsPath, plansPath, docsPath, docsMaxLoc = 800 
  * @param {number} params.validationMax - Max questions
  * @returns {string[]} Lines for plan context section
  */
-function buildPlanContextSection({ planLine, reportsPath, gitBranch, validationMode, validationMin, validationMax }) {
-  const lines = [
-    `## Plan Context`,
-    planLine,
-    `- Reports: ${reportsPath}`
-  ];
+function buildPlanContextSection({
+  planLine,
+  reportsPath,
+  gitBranch,
+  validationMode,
+  validationMin,
+  validationMax,
+}) {
+  const lines = [`## Plan Context`, planLine, `- Reports: ${reportsPath}`];
 
   if (gitBranch) {
     lines.push(`- Branch: ${gitBranch}`);
   }
 
-  lines.push(`- Validation: mode=${validationMode}, questions=${validationMin}-${validationMax}`);
+  lines.push(
+    `- Validation: mode=${validationMode}, questions=${validationMin}-${validationMax}`,
+  );
   lines.push(``);
 
   return lines;
@@ -436,7 +497,7 @@ function buildNamingSection({ reportsPath, plansPath, namePattern }) {
     `- Report: \`${reportsPath}{type}-${namePattern}.md\``,
     `- Plan dir: \`${plansPath}/${namePattern}/\``,
     `- Replace \`{type}\` with: agent name, report type, or context`,
-    `- Replace \`{slug}\` in pattern with: descriptive-kebab-slug`
+    `- Replace \`{slug}\` in pattern with: descriptive-kebab-slug`,
   ];
 }
 
@@ -468,7 +529,7 @@ function buildReminder(params) {
     validationMin,
     validationMax,
     staticEnv,
-    hooks
+    hooks,
   } = params;
 
   // Respect hooks config — skip sections when their corresponding hook is disabled
@@ -481,11 +542,24 @@ function buildReminder(params) {
     ...buildSessionSection(staticEnv),
     ...(contextEnabled ? buildContextSection(sessionId) : []),
     ...(usageEnabled ? buildUsageSection() : []),
-    ...buildRulesSection({ devRulesPath, catalogScript, skillsVenv, plansPath, docsPath }),
+    ...buildRulesSection({
+      devRulesPath,
+      catalogScript,
+      skillsVenv,
+      plansPath,
+      docsPath,
+    }),
     ...buildModularizationSection(),
     ...buildPathsSection({ reportsPath, plansPath, docsPath, docsMaxLoc }),
-    ...buildPlanContextSection({ planLine, reportsPath, gitBranch, validationMode, validationMin, validationMax }),
-    ...buildNamingSection({ reportsPath, plansPath, namePattern })
+    ...buildPlanContextSection({
+      planLine,
+      reportsPath,
+      gitBranch,
+      validationMode,
+      validationMin,
+      validationMax,
+    }),
+    ...buildNamingSection({ reportsPath, plansPath, namePattern }),
   ];
 }
 
@@ -504,7 +578,13 @@ function buildReminder(params) {
  *   sections: Object
  * }}
  */
-function buildReminderContext({ sessionId, config, staticEnv, configDirName = '.claude', baseDir } = {}) {
+function buildReminderContext({
+  sessionId,
+  config,
+  staticEnv,
+  configDirName = '.claude',
+  baseDir,
+} = {}) {
   // Load config if not provided
   const cfg = config || loadConfig({ includeProject: false, includeAssertions: false });
 
@@ -530,8 +610,12 @@ function buildReminderContext({ sessionId, config, staticEnv, configDirName = '.
     devRulesPath,
     catalogScript,
     skillsVenv,
-    reportsPath: effectiveBaseDir ? path.join(effectiveBaseDir, planCtx.reportsPath) : planCtx.reportsPath,
-    plansPath: effectiveBaseDir ? path.join(effectiveBaseDir, plansPathRel) : plansPathRel,
+    reportsPath: effectiveBaseDir
+      ? path.join(effectiveBaseDir, planCtx.reportsPath)
+      : planCtx.reportsPath,
+    plansPath: effectiveBaseDir
+      ? path.join(effectiveBaseDir, plansPathRel)
+      : plansPathRel,
     docsPath: effectiveBaseDir ? path.join(effectiveBaseDir, docsPathRel) : docsPathRel,
     docsMaxLoc: Math.max(1, parseInt(cfg.docs?.maxLoc, 10) || 800),
     planLine: planCtx.planLine,
@@ -541,7 +625,7 @@ function buildReminderContext({ sessionId, config, staticEnv, configDirName = '.
     validationMin: planCtx.validationMin,
     validationMax: planCtx.validationMax,
     staticEnv,
-    hooks: cfg.hooks
+    hooks: cfg.hooks,
   };
 
   const lines = buildReminder(params);
@@ -555,16 +639,34 @@ function buildReminderContext({ sessionId, config, staticEnv, configDirName = '.
     content: lines.join('\n'),
     lines,
     sections: {
-      language: buildLanguageSection({ thinkingLanguage: params.thinkingLanguage, responseLanguage: params.responseLanguage }),
+      language: buildLanguageSection({
+        thinkingLanguage: params.thinkingLanguage,
+        responseLanguage: params.responseLanguage,
+      }),
       session: buildSessionSection(staticEnv),
       context: contextEnabled ? buildContextSection(sessionId) : [],
       usage: usageEnabled ? buildUsageSection() : [],
-      rules: buildRulesSection({ devRulesPath, catalogScript, skillsVenv, plansPath: params.plansPath, docsPath: params.docsPath }),
+      rules: buildRulesSection({
+        devRulesPath,
+        catalogScript,
+        skillsVenv,
+        plansPath: params.plansPath,
+        docsPath: params.docsPath,
+      }),
       modularization: buildModularizationSection(),
-      paths: buildPathsSection({ reportsPath: params.reportsPath, plansPath: params.plansPath, docsPath: params.docsPath, docsMaxLoc: params.docsMaxLoc }),
+      paths: buildPathsSection({
+        reportsPath: params.reportsPath,
+        plansPath: params.plansPath,
+        docsPath: params.docsPath,
+        docsMaxLoc: params.docsMaxLoc,
+      }),
       planContext: buildPlanContextSection(planCtx),
-      naming: buildNamingSection({ reportsPath: params.reportsPath, plansPath: params.plansPath, namePattern: params.namePattern })
-    }
+      naming: buildNamingSection({
+        reportsPath: params.reportsPath,
+        plansPath: params.plansPath,
+        namePattern: params.namePattern,
+      }),
+    },
   };
 }
 
@@ -597,5 +699,5 @@ module.exports = {
   wasRecentlyInjected,
 
   // Backward compat alias
-  resolveWorkflowPath: resolveRulesPath
+  resolveWorkflowPath: resolveRulesPath,
 };

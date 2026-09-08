@@ -19,23 +19,23 @@ const APPROVED_PREFIX = 'APPROVED:';
 
 // Safe file patterns - exempt from privacy checks (documentation/template files)
 const SAFE_PATTERNS = [
-  /\.example$/i,   // .env.example, config.example
-  /\.sample$/i,    // .env.sample
-  /\.template$/i,  // .env.template
+  /\.example$/i, // .env.example, config.example
+  /\.sample$/i, // .env.sample
+  /\.template$/i, // .env.template
 ];
 
 // Privacy-sensitive patterns
 const PRIVACY_PATTERNS = [
-  /^\.env$/,              // .env
-  /^\.env\./,             // .env.local, .env.production, etc.
-  /\.env$/,               // path/to/.env
-  /\/\.env\./,            // path/to/.env.local
-  /credentials/i,         // credentials.json, etc.
-  /secrets?\.ya?ml$/i,    // secrets.yaml, secret.yml
-  /\.pem$/,               // Private keys
-  /\.key$/,               // Private keys
-  /id_rsa/,               // SSH keys
-  /id_ed25519/,           // SSH keys
+  /^\.env$/, // .env
+  /^\.env\./, // .env.local, .env.production, etc.
+  /\.env$/, // path/to/.env
+  /\/\.env\./, // path/to/.env.local
+  /credentials/i, // credentials.json, etc.
+  /secrets?\.ya?ml$/i, // secrets.yaml, secret.yml
+  /\.pem$/, // Private keys
+  /\.key$/, // Private keys
+  /id_rsa/, // SSH keys
+  /id_ed25519/, // SSH keys
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -50,7 +50,7 @@ const PRIVACY_PATTERNS = [
 function isSafeFile(testPath) {
   if (!testPath) return false;
   const basename = path.basename(testPath);
-  return SAFE_PATTERNS.some(p => p.test(basename));
+  return SAFE_PATTERNS.some((p) => p.test(basename));
 }
 
 /**
@@ -134,16 +134,16 @@ function extractPaths(toolInput) {
   if (toolInput.command) {
     // Look for APPROVED:.env or .env patterns
     const approvedMatch = toolInput.command.match(/APPROVED:[^\s]+/g) || [];
-    approvedMatch.forEach(p => paths.push({ value: p, field: 'command' }));
+    approvedMatch.forEach((p) => paths.push({ value: p, field: 'command' }));
 
     // Only look for .env if no APPROVED: version found
     if (approvedMatch.length === 0) {
       const envMatch = toolInput.command.match(/\.env[^\s]*/g) || [];
-      envMatch.forEach(p => paths.push({ value: p, field: 'command' }));
+      envMatch.forEach((p) => paths.push({ value: p, field: 'command' }));
 
       // Also check bash variable assignments (FILE=.env, ENV_FILE=.env.local)
       const varAssignments = toolInput.command.match(/\w+=[^\s]*\.env[^\s]*/g) || [];
-      varAssignments.forEach(a => {
+      varAssignments.forEach((a) => {
         const value = a.split('=')[1];
         if (value) paths.push({ value, field: 'command' });
       });
@@ -157,7 +157,7 @@ function extractPaths(toolInput) {
     }
   }
 
-  return paths.filter(p => p.value);
+  return paths.filter((p) => p.value);
 }
 
 /**
@@ -192,10 +192,16 @@ function buildPromptData(filePath) {
       header: 'File Access',
       text: `I need to read "${basename}" which may contain sensitive data (API keys, passwords, tokens). Do you approve?`,
       options: [
-        { label: 'Yes, approve access', description: `Allow reading ${basename} this time` },
-        { label: 'No, skip this file', description: 'Continue without accessing this file' }
-      ]
-    }
+        {
+          label: 'Yes, approve access',
+          description: `Allow reading ${basename} this time`,
+        },
+        {
+          label: 'No, skip this file',
+          description: 'Continue without accessing this file',
+        },
+      ],
+    },
   };
 }
 
@@ -245,7 +251,7 @@ function checkPrivacy({ toolName, toolInput, options = {} }) {
         blocked: false,
         approved: true,
         filePath: strippedPath,
-        suspicious: isSuspiciousPath(strippedPath)
+        suspicious: isSuspiciousPath(strippedPath),
       };
     }
 
@@ -255,7 +261,7 @@ function checkPrivacy({ toolName, toolInput, options = {} }) {
         blocked: false,
         isBash: true,
         filePath: testPath,
-        reason: `Bash command accesses sensitive file: ${testPath}`
+        reason: `Bash command accesses sensitive file: ${testPath}`,
       };
     }
 
@@ -264,7 +270,7 @@ function checkPrivacy({ toolName, toolInput, options = {} }) {
       blocked: true,
       filePath: testPath,
       reason: `Sensitive file access requires user approval`,
-      promptData: buildPromptData(testPath)
+      promptData: buildPromptData(testPath),
     };
   }
 
@@ -293,5 +299,5 @@ module.exports = {
   // Constants
   APPROVED_PREFIX,
   SAFE_PATTERNS,
-  PRIVACY_PATTERNS
+  PRIVACY_PATTERNS,
 };

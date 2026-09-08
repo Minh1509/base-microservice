@@ -1,4 +1,4 @@
-import { AUTH_PATTERNS } from '@app/contracts';
+import { AUTH_PATTERNS } from '@app/contracts/auth';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthServiceService } from './auth-service.service';

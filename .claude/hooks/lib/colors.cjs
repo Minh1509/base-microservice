@@ -42,12 +42,24 @@ function colorize(text, code) {
   return `${code}${text}${RESET}`;
 }
 
-function green(text) { return colorize(text, GREEN); }
-function yellow(text) { return colorize(text, YELLOW); }
-function red(text) { return colorize(text, RED); }
-function cyan(text) { return colorize(text, CYAN); }
-function magenta(text) { return colorize(text, MAGENTA); }
-function dim(text) { return colorize(text, DIM); }
+function green(text) {
+  return colorize(text, GREEN);
+}
+function yellow(text) {
+  return colorize(text, YELLOW);
+}
+function red(text) {
+  return colorize(text, RED);
+}
+function cyan(text) {
+  return colorize(text, CYAN);
+}
+function magenta(text) {
+  return colorize(text, MAGENTA);
+}
+function dim(text) {
+  return colorize(text, DIM);
+}
 
 /**
  * Get color code based on context percentage threshold
@@ -91,5 +103,5 @@ module.exports = {
   getContextColor,
   coloredBar,
   shouldUseColor,
-  has256Color
+  has256Color,
 };

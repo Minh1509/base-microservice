@@ -49,8 +49,8 @@ function loadPatterns(ignorePath) {
     const content = fs.readFileSync(ignorePath, 'utf-8');
     const patterns = content
       .split('\n')
-      .map(line => line.trim())
-      .filter(line => line && !line.startsWith('#'));
+      .map((line) => line.trim())
+      .filter((line) => line && !line.startsWith('#'));
 
     return patterns.length > 0 ? patterns : DEFAULT_PATTERNS;
   } catch (error) {
@@ -106,7 +106,7 @@ function createMatcher(patterns) {
   return {
     ig,
     patterns: normalizedPatterns,
-    original: patterns
+    original: patterns,
   };
 }
 
@@ -187,7 +187,7 @@ function findMatchingPattern(originalPatterns, path) {
     }
   }
 
-  return originalPatterns.find(p => !p.startsWith('!')) || 'unknown';
+  return originalPatterns.find((p) => !p.startsWith('!')) || 'unknown';
 }
 
 module.exports = {
@@ -195,5 +195,5 @@ module.exports = {
   createMatcher,
   matchPath,
   findMatchingPattern,
-  DEFAULT_PATTERNS
+  DEFAULT_PATTERNS,
 };

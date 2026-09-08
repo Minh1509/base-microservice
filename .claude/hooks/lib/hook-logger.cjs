@@ -62,7 +62,7 @@ function logHook(hookName, data) {
       dur: data.dur || 0,
       status: data.status || 'ok',
       exit: data.exit !== undefined ? data.exit : 0,
-      error: data.error || ''
+      error: data.error || '',
     };
 
     fs.appendFileSync(LOG_FILE, JSON.stringify(entry) + '\n', 'utf-8');
@@ -82,11 +82,11 @@ function createHookTimer(hookName) {
     end(data = {}) {
       const dur = Date.now() - start;
       logHook(hookName, { ...data, dur });
-    }
+    },
   };
 }
 
 module.exports = {
   logHook,
-  createHookTimer
+  createHookTimer,
 };

@@ -16,7 +16,7 @@ const COLORS = {
   cyan: '\x1b[36m',
   bold: '\x1b[1m',
   dim: '\x1b[2m',
-  reset: '\x1b[0m'
+  reset: '\x1b[0m',
 };
 
 /**
@@ -79,13 +79,13 @@ function formatBlockedError(details) {
   const configPath = formatConfigPath(claudeDir);
 
   // Truncate path if too long
-  const displayPath = blockedPath.length > 60
-    ? '...' + blockedPath.slice(-57)
-    : blockedPath;
+  const displayPath =
+    blockedPath.length > 60 ? '...' + blockedPath.slice(-57) : blockedPath;
 
   const lines = [
     '',
-    colorize('NOTE:', 'cyan') + ' This is not an error - this block is intentional to optimize context.',
+    colorize('NOTE:', 'cyan') +
+      ' This is not an error - this block is intentional to optimize context.',
     '',
     colorize('BLOCKED', 'red') + `: Access to '${displayPath}' denied`,
     '',
@@ -96,7 +96,7 @@ function formatBlockedError(details) {
     `    !${pattern}`,
     '',
     `  ${colorize('Config:', 'dim')} ${configPath}`,
-    ''
+    '',
   ];
 
   return lines.join('\n');
@@ -130,7 +130,7 @@ function formatMachineError(details) {
     pattern: pattern,
     tool: tool,
     config: configPath,
-    fix: `Add '!${pattern}' to ${configPath} to allow this path`
+    fix: `Add '!${pattern}' to ${configPath} to allow this path`,
   });
 }
 
@@ -152,5 +152,5 @@ module.exports = {
   formatConfigPath,
   supportsColor,
   colorize,
-  COLORS
+  COLORS,
 };
