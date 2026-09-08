@@ -1,2 +1,1 @@
-pnpm exec prettier --write .
-
+pnpm exec lint-staged
