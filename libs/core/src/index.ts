@@ -1,3 +1,4 @@
 export * from './database';
 export * from './logger';
-export * from './queue';
+export * from './kafka';
+export * from './redis';

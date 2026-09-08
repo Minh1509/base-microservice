@@ -23,18 +23,13 @@ services:
     image: redis:7-alpine
     container_name: bm-redis
     restart: unless-stopped
-    command:
-      [
-        'redis-server',
-        '--requirepass',
-        '${REDIS_PASSWORD:?REDIS_PASSWORD required in .env}',
-      ]
+    command: ['redis-server']
     ports:
       - '${REDIS_PORT:-6379}:6379'
     volumes:
       - ./data/redis:/data
     healthcheck:
-      test: ['CMD-SHELL', 'redis-cli -a $${REDIS_PASSWORD} ping | grep -q PONG']
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 3s
       retries: 10

@@ -12,8 +12,8 @@ import {
   PingUserResponseDto,
   USER_PATTERNS,
 } from '@app/contracts/user';
+import { AUTH_SERVICE, sendRpc, USER_SERVICE } from '@app/core/kafka';
 import { AppLogger } from '@app/core/logger';
-import { AUTH_SERVICE, sendRpc, USER_SERVICE } from '@app/core/queue';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { Logger } from 'winston';
