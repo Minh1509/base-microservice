@@ -1,5 +1,5 @@
 import { appConfig } from '@app/config';
-import { AppLogger } from '@app/logger';
+import { AppLogger } from '@app/core/logger';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { Logger } from 'winston';

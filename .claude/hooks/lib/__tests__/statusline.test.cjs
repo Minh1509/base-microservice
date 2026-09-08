@@ -23,20 +23,20 @@ const {
   magenta,
   dim,
   RESET,
-  getContextColor
+  getContextColor,
 } = require('../colors.cjs');
 
 const {
   parseTranscript,
   processEntry,
-  extractTarget
+  extractTarget,
 } = require('../transcript-parser.cjs');
 
 const {
   countConfigs,
   countRulesInDir,
   countMcpServersInFile,
-  countHooksInFile
+  countHooksInFile,
 } = require('../config-counter.cjs');
 
 // Test framework
@@ -59,7 +59,9 @@ function test(name, fn) {
 
 function assertEquals(actual, expected, msg = '') {
   if (actual !== expected) {
-    throw new Error(`${msg}\n  Expected: ${JSON.stringify(expected)}\n  Actual: ${JSON.stringify(actual)}`);
+    throw new Error(
+      `${msg}\n  Expected: ${JSON.stringify(expected)}\n  Actual: ${JSON.stringify(actual)}`,
+    );
   }
 }
 
@@ -116,8 +118,14 @@ test('transcript-parser.cjs exports required functions', () => {
 test('config-counter.cjs exports required functions', () => {
   assertTrue(typeof countConfigs === 'function', 'countConfigs should be function');
   assertTrue(typeof countRulesInDir === 'function', 'countRulesInDir should be function');
-  assertTrue(typeof countMcpServersInFile === 'function', 'countMcpServersInFile should be function');
-  assertTrue(typeof countHooksInFile === 'function', 'countHooksInFile should be function');
+  assertTrue(
+    typeof countMcpServersInFile === 'function',
+    'countMcpServersInFile should be function',
+  );
+  assertTrue(
+    typeof countHooksInFile === 'function',
+    'countHooksInFile should be function',
+  );
 });
 
 // ============================================================================
@@ -133,7 +141,7 @@ test('green() wraps text with color codes or returns plain text', () => {
   const result = green(text);
   assertTrue(
     result === text || result.includes(text),
-    'green() should return colored or plain text'
+    'green() should return colored or plain text',
   );
 });
 
@@ -163,10 +171,7 @@ test('dim() returns valid output', () => {
 });
 
 test('shouldUseColor is boolean', () => {
-  assertTrue(
-    typeof shouldUseColor === 'boolean',
-    'shouldUseColor should be boolean'
-  );
+  assertTrue(typeof shouldUseColor === 'boolean', 'shouldUseColor should be boolean');
 });
 
 // ============================================================================
@@ -294,10 +299,10 @@ const sampleTranscriptData = [
           type: 'tool_use',
           id: 'tool-1',
           name: 'Read',
-          input: { file_path: '/home/user/file.txt' }
-        }
-      ]
-    }
+          input: { file_path: '/home/user/file.txt' },
+        },
+      ],
+    },
   },
   {
     timestamp: '2026-01-06T12:01:00Z',
@@ -306,10 +311,10 @@ const sampleTranscriptData = [
         {
           type: 'tool_result',
           tool_use_id: 'tool-1',
-          is_error: false
-        }
-      ]
-    }
+          is_error: false,
+        },
+      ],
+    },
   },
   {
     timestamp: '2026-01-06T12:02:00Z',
@@ -319,10 +324,10 @@ const sampleTranscriptData = [
           type: 'tool_use',
           id: 'tool-2',
           name: 'Bash',
-          input: { command: 'git status' }
-        }
-      ]
-    }
+          input: { command: 'git status' },
+        },
+      ],
+    },
   },
   {
     timestamp: '2026-01-06T12:03:00Z',
@@ -332,10 +337,14 @@ const sampleTranscriptData = [
           type: 'tool_use',
           id: 'agent-1',
           name: 'Task',
-          input: { subagent_type: 'researcher', model: 'claude-opus', description: 'Research topic' }
-        }
-      ]
-    }
+          input: {
+            subagent_type: 'researcher',
+            model: 'claude-opus',
+            description: 'Research topic',
+          },
+        },
+      ],
+    },
   },
   {
     timestamp: '2026-01-06T12:04:00Z',
@@ -344,10 +353,10 @@ const sampleTranscriptData = [
         {
           type: 'tool_result',
           tool_use_id: 'agent-1',
-          is_error: false
-        }
-      ]
-    }
+          is_error: false,
+        },
+      ],
+    },
   },
   {
     timestamp: '2026-01-06T12:05:00Z',
@@ -359,17 +368,28 @@ const sampleTranscriptData = [
           name: 'TodoWrite',
           input: {
             todos: [
-              { content: 'First task', status: 'completed', activeForm: 'Completing first task' },
-              { content: 'Second task', status: 'in_progress', activeForm: 'Working on second task' }
-            ]
-          }
-        }
-      ]
-    }
-  }
+              {
+                content: 'First task',
+                status: 'completed',
+                activeForm: 'Completing first task',
+              },
+              {
+                content: 'Second task',
+                status: 'in_progress',
+                activeForm: 'Working on second task',
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
 ];
 
-fs.writeFileSync(tmpTranscript, sampleTranscriptData.map(d => JSON.stringify(d)).join('\n'));
+fs.writeFileSync(
+  tmpTranscript,
+  sampleTranscriptData.map((d) => JSON.stringify(d)).join('\n'),
+);
 
 test('parseTranscript reads valid JSONL file', async () => {
   const result = await parseTranscript(tmpTranscript);
@@ -381,14 +401,14 @@ test('parseTranscript reads valid JSONL file', async () => {
 test('parseTranscript tracks tools correctly', async () => {
   const result = await parseTranscript(tmpTranscript);
   assertTrue(result.tools.length >= 2, 'Should track at least 2 tools');
-  const toolNames = result.tools.map(t => t.name);
+  const toolNames = result.tools.map((t) => t.name);
   assertContains(toolNames.join(','), 'Read', 'Should contain Read tool');
   assertContains(toolNames.join(','), 'Bash', 'Should contain Bash tool');
 });
 
 test('parseTranscript marks tool status correctly', async () => {
   const result = await parseTranscript(tmpTranscript);
-  const completedTools = result.tools.filter(t => t.status === 'completed');
+  const completedTools = result.tools.filter((t) => t.status === 'completed');
   assertTrue(completedTools.length > 0, 'Should have at least one completed tool');
 });
 
@@ -403,13 +423,13 @@ test('parseTranscript tracks agents correctly', async () => {
 test('parseTranscript tracks todos correctly', async () => {
   const result = await parseTranscript(tmpTranscript);
   assertTrue(result.todos.length >= 2, 'Should track todos');
-  const inProgressTodos = result.todos.filter(t => t.status === 'in_progress');
+  const inProgressTodos = result.todos.filter((t) => t.status === 'in_progress');
   assertTrue(inProgressTodos.length > 0, 'Should have in_progress todo');
 });
 
 test('parseTranscript extracts targets from tools', async () => {
   const result = await parseTranscript(tmpTranscript);
-  const readTool = result.tools.find(t => t.name === 'Read');
+  const readTool = result.tools.find((t) => t.name === 'Read');
   if (readTool) {
     assertTrue(readTool.target, 'Read tool should have target');
     assertContains(readTool.target, 'file.txt', 'Should contain file path');
@@ -455,7 +475,8 @@ test('extractTarget: Bash tool (short command)', () => {
 });
 
 test('extractTarget: Bash tool (long command truncated)', () => {
-  const longCmd = 'npm install --save-dev @types/node @types/jest @types/react @types/react-dom @types/webpack';
+  const longCmd =
+    'npm install --save-dev @types/node @types/jest @types/react @types/react-dom @types/webpack';
   const target = extractTarget('Bash', { command: longCmd });
   assertTrue(target.endsWith('...'), 'Should truncate long command with ...');
   assertTrue(target.length <= 33, 'Should be max 30 chars + ...');
@@ -566,10 +587,10 @@ test('processEntry handles entry without timestamp', () => {
           type: 'tool_use',
           id: 'tool-1',
           name: 'Bash',
-          input: { command: 'ls' }
-        }
-      ]
-    }
+          input: { command: 'ls' },
+        },
+      ],
+    },
   };
 
   processEntry(entry, toolMap, agentMap, latestTodos, result);
@@ -597,9 +618,9 @@ test('processEntry handles malformed tool_result', () => {
     timestamp: '2026-01-06T12:00:00Z',
     message: {
       content: [
-        { type: 'tool_result' } // missing tool_use_id
-      ]
-    }
+        { type: 'tool_result' }, // missing tool_use_id
+      ],
+    },
   };
 
   processEntry(entry, toolMap, agentMap, latestTodos, result);
@@ -620,19 +641,21 @@ test('parseTranscript processes 100 entries <100ms', async () => {
   const lines = [];
 
   for (let i = 0; i < 100; i++) {
-    lines.push(JSON.stringify({
-      timestamp: new Date().toISOString(),
-      message: {
-        content: [
-          {
-            type: 'tool_use',
-            id: `tool-${i}`,
-            name: 'Bash',
-            input: { command: 'echo test' }
-          }
-        ]
-      }
-    }));
+    lines.push(
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        message: {
+          content: [
+            {
+              type: 'tool_use',
+              id: `tool-${i}`,
+              name: 'Bash',
+              input: { command: 'echo test' },
+            },
+          ],
+        },
+      }),
+    );
   }
 
   fs.writeFileSync(largeTranscript, lines.join('\n'));
@@ -678,7 +701,7 @@ console.log(`Failed: ${failed}`);
 
 if (failed > 0) {
   console.log('\nFailed Tests:');
-  failures.forEach(f => {
+  failures.forEach((f) => {
     console.log(`  ✗ ${f.name}`);
     console.log(`    ${f.error.split('\n')[0]}`);
   });

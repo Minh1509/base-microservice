@@ -7,8 +7,10 @@
  */
 
 // Replicate the patterns from scout-block.cjs
-const BUILD_COMMAND_PATTERN = /^(npm|pnpm|yarn|bun)\s+([^\s]+\s+)*(run\s+)?(build|test|lint|dev|start|install|ci|add|remove|update|publish|pack|init|create|exec)/;
-const TOOL_COMMAND_PATTERN = /^(\.\/)?(npx|pnpx|bunx|tsc|esbuild|vite|webpack|rollup|turbo|nx|jest|vitest|mocha|eslint|prettier|go|cargo|make|mvn|mvnw|gradle|gradlew|dotnet|docker|podman|kubectl|helm|terraform|ansible|bazel|cmake|sbt|flutter|swift|ant|ninja|meson)/;
+const BUILD_COMMAND_PATTERN =
+  /^(npm|pnpm|yarn|bun)\s+([^\s]+\s+)*(run\s+)?(build|test|lint|dev|start|install|ci|add|remove|update|publish|pack|init|create|exec)/;
+const TOOL_COMMAND_PATTERN =
+  /^(\.\/)?(npx|pnpx|bunx|tsc|esbuild|vite|webpack|rollup|turbo|nx|jest|vitest|mocha|eslint|prettier|go|cargo|make|mvn|mvnw|gradle|gradlew|dotnet|docker|podman|kubectl|helm|terraform|ansible|bazel|cmake|sbt|flutter|swift|ant|ninja|meson)/;
 
 function isBuildCommand(command) {
   if (!command || typeof command !== 'string') return false;
@@ -128,7 +130,9 @@ for (const test of tests) {
     console.log(`\x1b[32m✓\x1b[0m ${test.desc}: ${result}`);
     passed++;
   } else {
-    console.log(`\x1b[31m✗\x1b[0m ${test.desc}: expected ${test.expected}, got ${result}`);
+    console.log(
+      `\x1b[31m✗\x1b[0m ${test.desc}: expected ${test.expected}, got ${result}`,
+    );
     failed++;
   }
 }

@@ -3,46 +3,66 @@
  * test-path-extractor.cjs - Unit tests for path-extractor module
  */
 
-const { extractFromToolInput, extractFromCommand, looksLikePath } = require('../path-extractor.cjs');
+const {
+  extractFromToolInput,
+  extractFromCommand,
+  looksLikePath,
+} = require('../path-extractor.cjs');
 
 const toolInputTests = [
   {
     input: { file_path: 'packages/web/src/index.js' },
     expected: ['packages/web/src/index.js'],
-    desc: 'file_path extraction'
+    desc: 'file_path extraction',
   },
   {
     input: { path: 'node_modules' },
     expected: ['node_modules'],
-    desc: 'path extraction'
+    desc: 'path extraction',
   },
   {
     input: { pattern: '**/node_modules/**' },
     expected: ['**/node_modules/**'],
-    desc: 'pattern extraction'
+    desc: 'pattern extraction',
   },
   {
     input: { command: 'ls packages/web/node_modules' },
     hasPath: 'packages/web/node_modules',
-    desc: 'command path extraction'
+    desc: 'command path extraction',
   },
   {
     input: { file_path: '/home/user/project/node_modules/pkg/index.js' },
     expected: ['/home/user/project/node_modules/pkg/index.js'],
-    desc: 'absolute path extraction'
+    desc: 'absolute path extraction',
   },
   {
     input: { file_path: 'packages/web/node_modules/react/package.json', path: 'src' },
     hasPath: 'packages/web/node_modules',
-    desc: 'multiple params extraction'
-  }
+    desc: 'multiple params extraction',
+  },
 ];
 
 const commandTests = [
-  { cmd: 'ls packages/web/node_modules', hasPath: 'packages/web/node_modules', desc: 'ls with subfolder' },
-  { cmd: 'cat "path with spaces/file.js"', hasPath: 'path with spaces/file.js', desc: 'quoted path' },
-  { cmd: "cat 'single/quoted/path.js'", hasPath: 'single/quoted/path.js', desc: 'single quoted path' },
-  { cmd: 'cd apps/api/node_modules && ls', hasPath: 'apps/api/node_modules', desc: 'cd with chained command' },
+  {
+    cmd: 'ls packages/web/node_modules',
+    hasPath: 'packages/web/node_modules',
+    desc: 'ls with subfolder',
+  },
+  {
+    cmd: 'cat "path with spaces/file.js"',
+    hasPath: 'path with spaces/file.js',
+    desc: 'quoted path',
+  },
+  {
+    cmd: "cat 'single/quoted/path.js'",
+    hasPath: 'single/quoted/path.js',
+    desc: 'single quoted path',
+  },
+  {
+    cmd: 'cd apps/api/node_modules && ls',
+    hasPath: 'apps/api/node_modules',
+    desc: 'cd with chained command',
+  },
   { cmd: 'rm -rf node_modules', hasPath: 'node_modules', desc: 'rm with flags' },
   { cmd: 'cp -r dist/ backup/', hasPath: 'dist', desc: 'cp with flags' },
 
@@ -81,9 +101,9 @@ for (const test of toolInputTests) {
   let success;
 
   if (test.expected) {
-    success = test.expected.every(e => result.includes(e));
+    success = test.expected.every((e) => result.includes(e));
   } else if (test.hasPath) {
-    success = result.some(p => p.includes(test.hasPath));
+    success = result.some((p) => p.includes(test.hasPath));
   }
 
   if (success) {
@@ -103,18 +123,22 @@ for (const test of commandTests) {
 
   if (test.hasPath === null) {
     // Build commands should extract few/no blocked-related paths
-    success = result.length === 0 || !result.some(p =>
-      p.includes('node_modules') || p.includes('dist') || p.includes('build')
-    );
+    success =
+      result.length === 0 ||
+      !result.some(
+        (p) => p.includes('node_modules') || p.includes('dist') || p.includes('build'),
+      );
   } else {
-    success = result.some(p => p.includes(test.hasPath));
+    success = result.some((p) => p.includes(test.hasPath));
   }
 
   if (success) {
     console.log(`\x1b[32m✓\x1b[0m ${test.desc}: ${JSON.stringify(result)}`);
     passed++;
   } else {
-    console.log(`\x1b[31m✗\x1b[0m ${test.desc}: expected path containing '${test.hasPath}', got ${JSON.stringify(result)}`);
+    console.log(
+      `\x1b[31m✗\x1b[0m ${test.desc}: expected path containing '${test.hasPath}', got ${JSON.stringify(result)}`,
+    );
     failed++;
   }
 }
@@ -129,7 +153,9 @@ for (const test of looksLikePathTests) {
     console.log(`\x1b[32m✓\x1b[0m ${test.desc}: '${test.str}' -> ${result}`);
     passed++;
   } else {
-    console.log(`\x1b[31m✗\x1b[0m ${test.desc}: expected ${test.expected}, got ${result}`);
+    console.log(
+      `\x1b[31m✗\x1b[0m ${test.desc}: expected ${test.expected}, got ${result}`,
+    );
     failed++;
   }
 }

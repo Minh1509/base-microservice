@@ -21,23 +21,7 @@
     "build:user": "nest build user-service",
     "start:gateway": "node dist/apps/api-gateway/main",
     "start:auth": "node dist/apps/auth-service/main",
-    "start:user": "node dist/apps/user-service/main",
-    "mikro:auth": "cross-env MIKRO_ORM_CLI_CONFIG=apps/auth-service/mikro-orm.config.ts mikro-orm",
-    "mikro:user": "cross-env MIKRO_ORM_CLI_CONFIG=apps/user-service/mikro-orm.config.ts mikro-orm",
-    "migration:auth:create": "pnpm mikro:auth migration:create --blank --name",
-    "migration:auth:up": "pnpm mikro:auth migration:up",
-    "migration:auth:down": "pnpm mikro:auth migration:down",
-    "migration:auth:fresh": "pnpm mikro:auth migration:fresh",
-    "migration:user:create": "pnpm mikro:user migration:create --blank --name",
-    "migration:user:up": "pnpm mikro:user migration:up",
-    "migration:user:down": "pnpm mikro:user migration:down",
-    "migration:user:fresh": "pnpm mikro:user migration:fresh",
-    "seed:auth": "pnpm mikro:auth seeder:run",
-    "seed:auth:only": "pnpm mikro:auth seeder:run --class",
-    "seed:user": "pnpm mikro:user seeder:run",
-    "seed:user:only": "pnpm mikro:user seeder:run --class",
-    "cli:auth": "ts-node -r tsconfig-paths/register apps/auth-service/src/cli.ts",
-    "cli:user": "ts-node -r tsconfig-paths/register apps/user-service/src/cli.ts"
+    "start:user": "node dist/apps/user-service/main"
   },
   "dependencies": {
     "@mikro-orm/core": "^6.6.14",
@@ -129,14 +113,10 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@app/cache(|/.*)$": "<rootDir>/libs/cache/src/$1",
       "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
-      "^@app/database(|/.*)$": "<rootDir>/libs/database/src/$1",
-      "^@app/dto(|/.*)$": "<rootDir>/libs/dto/src/$1",
-      "^@app/logger(|/.*)$": "<rootDir>/libs/logger/src/$1",
-      "^@app/queue(|/.*)$": "<rootDir>/libs/queue/src/$1",
-      "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1"
+      "^@app/core(|/.*)$": "<rootDir>/libs/core/src/$1",
+      "^@app/contracts(|/.*)$": "<rootDir>/libs/contracts/src/$1"
     }
   }
 }

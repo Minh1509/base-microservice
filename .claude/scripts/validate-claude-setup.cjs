@@ -25,10 +25,20 @@ const CLAUDE_DIR = path.join(ROOT, '.claude');
 let errors = 0;
 let warnings = 0;
 
-function pass(msg) { console.log(`  \x1b[32m✓\x1b[0m ${msg}`); }
-function fail(msg) { console.error(`  \x1b[31m✗\x1b[0m ${msg}`); errors++; }
-function warn(msg) { console.warn(`  \x1b[33m⚠\x1b[0m ${msg}`); warnings++; }
-function section(title) { console.log(`\n\x1b[1m${title}\x1b[0m`); }
+function pass(msg) {
+  console.log(`  \x1b[32m✓\x1b[0m ${msg}`);
+}
+function fail(msg) {
+  console.error(`  \x1b[31m✗\x1b[0m ${msg}`);
+  errors++;
+}
+function warn(msg) {
+  console.warn(`  \x1b[33m⚠\x1b[0m ${msg}`);
+  warnings++;
+}
+function section(title) {
+  console.log(`\n\x1b[1m${title}\x1b[0m`);
+}
 
 // ─── 1. Critical files ────────────────────────────────────────────────────────
 
@@ -75,7 +85,7 @@ const boundHooks = new Set();
 if (settings?.hooks) {
   for (const lifecycle of Object.values(settings.hooks)) {
     for (const group of lifecycle) {
-      for (const hook of (group.hooks || [])) {
+      for (const hook of group.hooks || []) {
         if (hook.command) {
           // Extract the .cjs file path from "node .claude/hooks/xxx.cjs"
           const match = hook.command.match(/node\s+(.+\.cjs)/);
@@ -145,7 +155,10 @@ for (const rel of IMPL_REQUIRED) {
     fail(`Implementation file missing: ${rel}`);
     continue;
   }
-  const lines = fs.readFileSync(abs, 'utf8').split('\n').filter(l => l.trim()).length;
+  const lines = fs
+    .readFileSync(abs, 'utf8')
+    .split('\n')
+    .filter((l) => l.trim()).length;
   if (lines < PLACEHOLDER_THRESHOLD) {
     warn(`Likely placeholder (${lines} non-empty lines): ${rel}`);
   } else {
@@ -177,7 +190,10 @@ for (const rel of ENTRYPOINT_HOOKS) {
     fail(`Entrypoint hook missing: ${rel}`);
     continue;
   }
-  const lines = fs.readFileSync(abs, 'utf8').split('\n').filter(l => l.trim()).length;
+  const lines = fs
+    .readFileSync(abs, 'utf8')
+    .split('\n')
+    .filter((l) => l.trim()).length;
   if (lines < PLACEHOLDER_THRESHOLD) {
     warn(`Placeholder (needs implementation): ${rel}`);
   } else {

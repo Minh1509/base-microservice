@@ -71,3 +71,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # Claude Code — local-only overrides (shared settings.json stays tracked)
 .claude/settings.local.json
 .claude/.credentials.json
+.claude/hooks/.logs/

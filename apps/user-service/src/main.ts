@@ -4,7 +4,7 @@ import {
   RpcLoggingInterceptor,
 } from '@app/common';
 import { kafkaConfig } from '@app/config';
-import { buildWinstonOptions } from '@app/logger';
+import { buildWinstonOptions } from '@app/core/logger';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { type MicroserviceOptions, Transport } from '@nestjs/microservices';

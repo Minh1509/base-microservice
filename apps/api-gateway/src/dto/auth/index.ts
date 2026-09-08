@@ -3,4 +3,4 @@ export {
   LoginResponseDto,
   PingAuthDto,
   PingAuthResponseDto,
-} from '@app/shared';
+} from '@app/contracts/auth';

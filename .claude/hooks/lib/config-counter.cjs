@@ -69,7 +69,10 @@ function countRulesInDir(rulesDir, depth = 0) {
 }
 
 function countConfigs(cwd) {
-  let claudeMdCount = 0, rulesCount = 0, mcpCount = 0, hooksCount = 0;
+  let claudeMdCount = 0,
+    rulesCount = 0,
+    mcpCount = 0,
+    hooksCount = 0;
   const homeDir = os.homedir();
   const claudeDir = path.join(homeDir, '.claude');
 
@@ -100,4 +103,10 @@ function countConfigs(cwd) {
   return { claudeMdCount, rulesCount, mcpCount, hooksCount };
 }
 
-module.exports = { countConfigs, getMcpServerNames, countMcpServersInFile, countHooksInFile, countRulesInDir };
+module.exports = {
+  countConfigs,
+  getMcpServerNames,
+  countMcpServersInFile,
+  countHooksInFile,
+  countRulesInDir,
+};

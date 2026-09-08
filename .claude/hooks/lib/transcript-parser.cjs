@@ -19,7 +19,7 @@ async function parseTranscript(transcriptPath) {
     tools: [],
     agents: [],
     todos: [],
-    sessionStart: null
+    sessionStart: null,
   };
 
   if (!transcriptPath || !fs.existsSync(transcriptPath)) {
@@ -34,7 +34,7 @@ async function parseTranscript(transcriptPath) {
     const fileStream = fs.createReadStream(transcriptPath);
     const rl = readline.createInterface({
       input: fileStream,
-      crlfDelay: Infinity
+      crlfDelay: Infinity,
     });
 
     for await (const line of rl) {
@@ -89,7 +89,7 @@ function processEntry(entry, toolMap, agentMap, latestTodos, result) {
           description: block.input?.description ?? null,
           status: 'running',
           startTime: timestamp,
-          endTime: null
+          endTime: null,
         });
       } else if (block.name === 'TodoWrite') {
         // Legacy: Replace todo array (deprecated, kept for backwards compatibility)
@@ -103,13 +103,13 @@ function processEntry(entry, toolMap, agentMap, latestTodos, result) {
           latestTodos.push({
             content: block.input.subject,
             status: 'pending',
-            activeForm: block.input.activeForm || null
+            activeForm: block.input.activeForm || null,
           });
         }
       } else if (block.name === 'TaskUpdate') {
         // Native Task API: Update existing task status
         if (block.input?.taskId && block.input?.status) {
-          const task = latestTodos.find(t => t.id === block.input.taskId);
+          const task = latestTodos.find((t) => t.id === block.input.taskId);
           if (task) {
             task.status = block.input.status;
           }
@@ -122,7 +122,7 @@ function processEntry(entry, toolMap, agentMap, latestTodos, result) {
           target: extractTarget(block.name, block.input),
           status: 'running',
           startTime: timestamp,
-          endTime: null
+          endTime: null,
         });
       }
     }
@@ -177,5 +177,5 @@ module.exports = {
   parseTranscript,
   // Export for testing
   processEntry,
-  extractTarget
+  extractTarget,
 };

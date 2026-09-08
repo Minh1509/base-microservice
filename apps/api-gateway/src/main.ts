@@ -5,7 +5,7 @@ import {
   setupSwagger,
 } from '@app/common';
 import { appConfig } from '@app/config';
-import { buildWinstonOptions } from '@app/logger';
+import { buildWinstonOptions } from '@app/core/logger';
 import { ClassSerializerInterceptor } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';

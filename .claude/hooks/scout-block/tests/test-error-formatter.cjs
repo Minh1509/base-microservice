@@ -11,7 +11,7 @@ const {
   formatConfigPath,
   supportsColor,
   colorize,
-  COLORS
+  COLORS,
 } = require('../error-formatter.cjs');
 
 let passed = 0;
@@ -31,9 +31,18 @@ console.log('Testing error-formatter module...\n');
 
 // formatConfigPath tests
 console.log('--- formatConfigPath Tests ---');
-test('formatConfigPath with claudeDir', formatConfigPath('/home/user/.claude').includes('adf-ignore.txt'));
-test('formatConfigPath without claudeDir', formatConfigPath(null) === '.claude/config/adf-ignore.txt');
-test('formatConfigPath empty string', formatConfigPath('') === '.claude/config/adf-ignore.txt');
+test(
+  'formatConfigPath with claudeDir',
+  formatConfigPath('/home/user/.claude').includes('adf-ignore.txt'),
+);
+test(
+  'formatConfigPath without claudeDir',
+  formatConfigPath(null) === '.claude/config/adf-ignore.txt',
+);
+test(
+  'formatConfigPath empty string',
+  formatConfigPath('') === '.claude/config/adf-ignore.txt',
+);
 
 // formatBlockedError tests
 console.log('\n--- formatBlockedError Tests ---');
@@ -41,10 +50,13 @@ const blockError = formatBlockedError({
   path: 'packages/web/node_modules/react',
   pattern: 'node_modules',
   tool: 'Bash',
-  claudeDir: '/home/user/project/.claude'
+  claudeDir: '/home/user/project/.claude',
 });
 test('formatBlockedError contains BLOCKED', blockError.includes('BLOCKED'));
-test('formatBlockedError contains path', blockError.includes('packages/web/node_modules/react'));
+test(
+  'formatBlockedError contains path',
+  blockError.includes('packages/web/node_modules/react'),
+);
 test('formatBlockedError contains pattern', blockError.includes('node_modules'));
 test('formatBlockedError contains tool', blockError.includes('Bash'));
 test('formatBlockedError contains fix hint', blockError.includes('!node_modules'));
@@ -55,7 +67,7 @@ const longPathError = formatBlockedError({
   path: longPath,
   pattern: 'node_modules',
   tool: 'Read',
-  claudeDir: '.claude'
+  claudeDir: '.claude',
 });
 test('formatBlockedError truncates long path', longPathError.includes('...'));
 
@@ -64,7 +76,10 @@ console.log('\n--- formatSimpleError Tests ---');
 const simpleError = formatSimpleError('node_modules', 'packages/web/node_modules');
 test('formatSimpleError contains ERROR', simpleError.includes('ERROR'));
 test('formatSimpleError contains pattern', simpleError.includes('node_modules'));
-test('formatSimpleError contains path', simpleError.includes('packages/web/node_modules'));
+test(
+  'formatSimpleError contains path',
+  simpleError.includes('packages/web/node_modules'),
+);
 
 // formatMachineError tests
 console.log('\n--- formatMachineError Tests ---');
@@ -72,7 +87,7 @@ const machineError = formatMachineError({
   path: 'dist/bundle.js',
   pattern: 'dist',
   tool: 'Read',
-  claudeDir: '.claude'
+  claudeDir: '.claude',
 });
 const parsed = JSON.parse(machineError);
 test('formatMachineError is valid JSON', typeof parsed === 'object');
@@ -96,8 +111,9 @@ test('colorize respects NO_COLOR', colorize('test', 'red') === 'test');
 delete process.env.NO_COLOR;
 
 // Test COLORS constant exists
-test('COLORS constant has expected keys',
-  'red' in COLORS && 'yellow' in COLORS && 'blue' in COLORS && 'reset' in COLORS
+test(
+  'COLORS constant has expected keys',
+  'red' in COLORS && 'yellow' in COLORS && 'blue' in COLORS && 'reset' in COLORS,
 );
 
 // Restore original NO_COLOR

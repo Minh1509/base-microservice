@@ -18,22 +18,14 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/cache": ["libs/cache/src"],
-      "@app/cache/*": ["libs/cache/src/*"],
       "@app/common": ["libs/common/src"],
       "@app/common/*": ["libs/common/src/*"],
       "@app/config": ["libs/config/src"],
       "@app/config/*": ["libs/config/src/*"],
-      "@app/database": ["libs/database/src"],
-      "@app/database/*": ["libs/database/src/*"],
-      "@app/dto": ["libs/dto/src"],
-      "@app/dto/*": ["libs/dto/src/*"],
-      "@app/logger": ["libs/logger/src"],
-      "@app/logger/*": ["libs/logger/src/*"],
-      "@app/queue": ["libs/queue/src"],
-      "@app/queue/*": ["libs/queue/src/*"],
-      "@app/shared": ["libs/shared/src"],
-      "@app/shared/*": ["libs/shared/src/*"]
+      "@app/core": ["libs/core/src"],
+      "@app/core/*": ["libs/core/src/*"],
+      "@app/contracts": ["libs/contracts/src"],
+      "@app/contracts/*": ["libs/contracts/src/*"]
     }
   }
 }
