@@ -129,14 +129,10 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@app/cache(|/.*)$": "<rootDir>/libs/cache/src/$1",
       "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
-      "^@app/database(|/.*)$": "<rootDir>/libs/database/src/$1",
-      "^@app/dto(|/.*)$": "<rootDir>/libs/dto/src/$1",
-      "^@app/logger(|/.*)$": "<rootDir>/libs/logger/src/$1",
-      "^@app/queue(|/.*)$": "<rootDir>/libs/queue/src/$1",
-      "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1"
+      "^@app/core(|/.*)$": "<rootDir>/libs/core/src/$1",
+      "^@app/contracts(|/.*)$": "<rootDir>/libs/contracts/src/$1"
     }
   }
 }

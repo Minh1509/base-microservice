@@ -1,1 +1,1 @@
-export { LoginDto, PingAuthDto } from '@app/shared';
+export { LoginDto, PingAuthDto } from '@app/contracts';

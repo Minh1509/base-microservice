@@ -30,11 +30,13 @@ apps/
   auth-service/
   user-service/
 libs/
-  common/        # sendRpc, RpcExceptionFilter, patterns, GlobalHttpExceptionFilter
-  config/        # registerAs configs, buildConfigModule
-  database/      # DatabaseModule (MikroORM)
-  dto/           # cross-service DTOs và response DTOs
+  config/        # registerAs configs, buildConfigModule (top-level, không phụ thuộc ai)
+  core/          # infra module: database/ (MikroORM), logger/ (winston), queue/ (Kafka)
+  common/        # code thuần: exception, decorators, guards, interceptors, pipes, docs
+  contracts/     # hợp đồng cross-service: dto/ + patterns/
 ```
+
+Import barrel con của core: `@app/core/database`, `@app/core/logger`, `@app/core/queue`.
 
 Khi thêm lib mới, sync alias ở **3 nơi**: `tsconfig.json`, root `package.json` (`jest.moduleNameMapper`), `nest-cli.json` (`projects`).
 

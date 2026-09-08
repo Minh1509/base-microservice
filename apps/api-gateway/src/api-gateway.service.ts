@@ -1,5 +1,3 @@
-import { AppLogger } from '@app/logger';
-import { AUTH_SERVICE, sendRpc, USER_SERVICE } from '@app/queue';
 import {
   ALL_AUTH_PATTERNS,
   ALL_USER_PATTERNS,
@@ -11,7 +9,9 @@ import {
   PingUserDto,
   PingUserResponseDto,
   USER_PATTERNS,
-} from '@app/shared';
+} from '@app/contracts';
+import { AppLogger } from '@app/core/logger';
+import { AUTH_SERVICE, sendRpc, USER_SERVICE } from '@app/core/queue';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { Logger } from 'winston';

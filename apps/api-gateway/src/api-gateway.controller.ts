@@ -5,7 +5,7 @@ import {
   PingAuthResponseDto,
   PingUserDto,
   PingUserResponseDto,
-} from '@app/shared';
+} from '@app/contracts';
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiGatewayService } from './api-gateway.service';
 
