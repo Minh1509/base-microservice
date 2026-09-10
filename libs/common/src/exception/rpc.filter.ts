@@ -7,7 +7,9 @@ import {
   Logger,
 } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
+import type { Request, Response } from 'express';
 import { Observable, throwError } from 'rxjs';
+import { HttpErrorResponse } from './http-error';
 import { isRpcErrorPayload, RpcErrorPayload } from './rpc-error';
 import { statusToCode } from './status-code.map';
 
@@ -24,6 +26,21 @@ export class RpcExceptionFilter implements ExceptionFilter {
         logMessage,
         exception instanceof Error ? exception.stack : undefined,
       );
+    }
+
+    if (_host.getType() === 'http') {
+      const ctx = _host.switchToHttp();
+      const req = ctx.getRequest<Request>();
+      const res = ctx.getResponse<Response>();
+
+      const body: HttpErrorResponse = {
+        ...payload,
+        timestamp: new Date().toISOString(),
+        path: req?.url,
+      };
+
+      res.status(payload.statusCode).json(body);
+      return;
     }
 
     return throwError(() => new RpcException(payload));

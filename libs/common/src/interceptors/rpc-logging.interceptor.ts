@@ -12,26 +12,41 @@ import { catchError, tap } from 'rxjs/operators';
 
 const chalk = (_chalk as any).default ?? _chalk;
 
+function formatSize(payload: unknown): string {
+  const bytes = payload ? Buffer.byteLength(JSON.stringify(payload)) : 0;
+  if (bytes < 1024) return `${bytes}B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
+}
+
 @Injectable()
 export class RpcLoggingInterceptor implements NestInterceptor {
   private readonly logger = new Logger(RpcLoggingInterceptor.name);
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-    const rpcContext = context.switchToRpc().getContext<KafkaContext>();
-    const pattern = rpcContext?.getTopic?.() ?? context.getHandler().name;
+    const isHttp = context.getType() === 'http';
+    const http = context.switchToHttp();
+    const rpc = context.switchToRpc();
+
+    const [action, payload] = isHttp
+      ? [`[${http.getRequest().method}] ${http.getRequest().url}`, http.getRequest().body]
+      : [
+          `[RPC] ${rpc.getContext<KafkaContext>()?.getTopic?.() ?? context.getHandler().name}`,
+          rpc.getData(),
+        ];
+
+    const label = `${action} [${formatSize(payload)}]`;
     const start = Date.now();
 
     return next.handle().pipe(
       tap(() => {
-        this.logger.log(
-          `[RPC] ${pattern} → ${chalk.green(200)} (${Date.now() - start}ms)`,
-        );
+        const status = isHttp ? http.getResponse().statusCode : 200;
+        const color = status >= 400 ? chalk.red : chalk.green;
+        this.logger.log(`${label} → ${color(status)} (${Date.now() - start}ms)`);
       }),
-      catchError((err: unknown) => {
-        const status = (err as any)?.error?.statusCode ?? (err as any)?.statusCode ?? 500;
-        this.logger.log(
-          `[RPC] ${pattern} → ${chalk.red(status)} (${Date.now() - start}ms)`,
-        );
+      catchError((err: any) => {
+        const status = err?.getStatus?.() ?? err?.statusCode ?? 500;
+        this.logger.log(`${label} → ${chalk.red(status)} (${Date.now() - start}ms)`);
         return throwError(() => err);
       }),
     );
